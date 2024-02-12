@@ -182,7 +182,7 @@
       pack.dependencies = {}
     }
     if (!pack.devDependencies) {
-      pack.dependencies = {}
+      pack.devDependencies = {}
     }
     fs.writeFileSync(paths.packagePath, JSON.stringify(pack, null, '\t'), { encoding: 'utf-8' })
     const dependencies = Object.keys(pack.dependencies)
