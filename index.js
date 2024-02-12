@@ -186,12 +186,12 @@
     }
     fs.writeFileSync(paths.packagePath, JSON.stringify(pack, null, '\t'), { encoding: 'utf-8' })
     const dependencies = Object.keys(pack.dependencies)
-    if (!dependencies.includes('express')) {
+    if (type.includes('http') && !dependencies.includes('express')) {
       log('Instalando ExpressJS ...')
       install('express')
       install('@types/express', true)
     }
-    if (!dependencies.includes('socket.io')) {
+    if (type.includes('sockets') && !dependencies.includes('socket.io')) {
       log('Instalando Socket.IO ...')
       install('socket.io')
     }
