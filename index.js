@@ -201,7 +201,7 @@
       install('@types/node', true)
     }
     if (!fs.existsSync(paths.declarations)) {
-      fs.writeFileSync(paths.declarations, "import 'pxio'\nimport 'pxio/config/http'\nimport 'pxio/config/sockets'\nimport 'pxio/libraries'\nimport 'pxio/models'\nimport 'pxio/controllers'\nimport 'pxio/controllers/http'\nimport 'pxio/controllers/sockets'", { encoding: 'utf-8' })
+      fs.writeFileSync(paths.declarations, "import 'px.io'\nimport 'px.io/config/http'\nimport 'px.io/config/sockets'\nimport 'px.io/libraries'\nimport 'px.io/models'\nimport 'px.io/controllers'\nimport 'px.io/controllers/http'\nimport 'px.io/controllers/sockets'", { encoding: 'utf-8' })
     }
     log('PXIO Framework!\n')
   }
