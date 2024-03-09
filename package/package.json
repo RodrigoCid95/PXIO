@@ -1,6 +1,6 @@
 {
 	"name": "px.io",
-	"version": "0.1.2-beta",
+	"version": "0.2.2-beta",
 	"description": "Framework backend",
 	"main": "index.js",
 	"types": "./index.d.ts",
