@@ -7,7 +7,7 @@ export const initSocketsServer = ({ http, onError = console.error } = {}) => {
   const routers = require(socketsRoutersPath).default
   const SocketIO = require('socket.io')
   let io = null
-  const pxioSocketsConfig = configs.get('pxioSocketsConfig') || {}
+  const pxioSocketsConfig = configs.get('WebSockets') || {}
   const {
     port = process.env.PORT ? parseInt(process.env.PORT) : 80,
     events = {}

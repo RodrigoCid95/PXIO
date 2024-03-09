@@ -15,7 +15,7 @@ export const initHttpServer = ({ returnInstance = false, onMessage = console.log
     pathsPublic,
     engineTemplates,
     optionsUrlencoded
-  } = configs.get('pxioHttpConfig') || {}
+  } = configs.get('HTTP') || {}
   app.set('port', port)
   let externalIp = null
   if (dev && dev.showExternalIp) {
