@@ -1,10 +1,13 @@
-declare const On: PXIO.Controllers.HTTP.OnDecorator
-declare const METHODS: PXIO.Controllers.HTTP.METHODS
+declare const Model: PXIO.ModelDecorator
+declare const On: PXIOHTTP.OnDecorator
+declare const METHODS: PXIOHTTP.METHODS
 const { GET } = METHODS
 
 export class IndexController {
+  @Model('MiModelo') model: Models<'MiModelo'>
+
   @On(GET, '/')
-  public index(req: PXIO.Controllers.HTTP.Request, res: PXIO.Controllers.HTTP.Response): void {
-    res.status(200).send('Hola, mundo!')
+  public index(req: PXIOHTTP.Request, res: PXIOHTTP.Response): void {
+    res.status(200).send(this.model.message)
   }
 }
