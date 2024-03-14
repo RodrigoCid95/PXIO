@@ -31,3 +31,5 @@ class Flags {
   }
 }
 export const flags = new Flags()
+const configsPath = './config.js'
+export const configs = require(configsPath).configs

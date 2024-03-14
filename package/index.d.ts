@@ -1,10 +1,14 @@
-type CallbackEmitter<T = undefined> = (args: T) => void | Promise<void>
+declare type CallbackEmitter<T = undefined> = (args: T) => void | Promise<void>
 
-declare function libraryDecorator(nameLibrary: keyof PXIO.LibrariesModule): (target: Object, propertyKey: string) => void
-declare function modelDecorator(nameLibrary: keyof PXIO.ModelsModule): (target: Object, propertyKey: string) => void
+declare function libraryDecorator(nameLibrary: keyof LibrariesModule): (target: Object, propertyKey: string) => void
+declare function modelDecorator(nameLibrary: keyof ModelsModule): (target: Object, propertyKey: string) => void
 declare function prefixDecorator(prefix: string): <T extends new (...args: any[]) => {}>(constructor: T) => void
 
 declare global {
+  type ModelsModule = typeof import('models')
+  type Models<T extends keyof ModelsModule> = InstanceType<ModelsModule[T]>
+  type ConfigModule = typeof import("config")
+  type LibrariesModule = typeof import("libraries")
   namespace PXIO {
     class Emitter {
       on<T = undefined>(callback: CallbackEmitter<T>): string
@@ -20,18 +24,17 @@ declare global {
     class Flags {
       get(name: string): string | number | boolean
     }
-    type ConfigModule = typeof import("config")
     class Configs {
       get<K extends keyof ConfigModule>(name: K): ConfigModule[K]
     }
-    type LibrariesModule = typeof import("libraries")
     class Libraries {
       get<K extends keyof LibrariesModule>(name: K): LibrariesModule[K]
       get<T = {}>(name: keyof LibrariesModule): T
     }
     type LibraryDecorator = typeof libraryDecorator
-    type ModelsModule = typeof import('models')
     type ModelDecorator = typeof modelDecorator
     type PrefixDecorator = typeof prefixDecorator
   }
 }
+
+export { }

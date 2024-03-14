@@ -1,4 +1,4 @@
-export const initHttpServer = ({ returnInstance = false, onMessage = console.log } = {}) => {
+export const initHttpServer = ({ onMessage = console.log } = {}) => {
   const configPath = './config.js'
   const { configs } = require(configPath)
   const httpRoutersPath = './http.js'
@@ -65,7 +65,5 @@ export const initHttpServer = ({ returnInstance = false, onMessage = console.log
   if (events.beforeStarting) {
     events.beforeStarting(app)
   }
-  if (returnInstance) {
-    return server
-  }
+  return { server, app }
 }

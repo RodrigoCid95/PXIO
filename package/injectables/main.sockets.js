@@ -7,7 +7,7 @@ export const initSocketsServer = ({ http, onError = console.error } = {}) => {
   const routers = require(socketsRoutersPath).default
   const SocketIO = require('socket.io')
   let io = null
-  const pxioSocketsConfig = configs.get('WebSockets') || {}
+  const pxioSocketsConfig = configs.get('WS') || {}
   const {
     port = process.env.PORT ? parseInt(process.env.PORT) : 80,
     events = {}
@@ -70,4 +70,5 @@ export const initSocketsServer = ({ http, onError = console.error } = {}) => {
       socket.on("disconnect", async (reason) => await events.onDisconnect(reason))
     }
   })
+  return io
 }

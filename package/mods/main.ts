@@ -12,7 +12,7 @@ const log = (message) => {
 }
 let http: any = undefined
 if (type.includes('http')) {
-  http = initHttpServer({ returnInstance: true, onMessage: log })
+  http = initHttpServer({ onMessage: log }).http
 }
 if (type.includes('sockets')) {
   initSocketsServer({ http, onError: log })

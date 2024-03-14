@@ -1,12 +1,12 @@
 import * as SocketIO from 'socket.io'
 import * as http from 'http'
-import './models'
+import '.'
 
-interface Req<S = any> extends http.IncomingMessage {
+declare interface Req<S = any> extends http.IncomingMessage {
   session: S
 }
 
-function onDecorator(nameEvent: string): (target: Object, propertyKey: string) => void
+declare function onDecorator(nameEvent: string): (target: Object, propertyKey: string) => void
 
 declare global {
   namespace PXIOSockets {
@@ -34,11 +34,11 @@ declare global {
         /**
          * Called before returning a response to the client.
          */
-        onBeforeToAnswer?: (response: any, socket: Socket, getLibraryInstance: PXIO.Models.Libraries['get']) => any | Promise<any>
+        onBeforeToAnswer?: (response: any, socket: Socket, getLibraryInstance: PXIO.Libraries['get']) => any | Promise<any>
         /**
          * Called when a call is made by the customer.
          */
-        onANewRequest?: (request: any[], socket: Socket, getLibraryInstance: PXIO.Models.Libraries['get']) => any[] | Promise<any[]>
+        onANewRequest?: (request: any[], socket: Socket, getLibraryInstance: PXIO.Libraries['get']) => any[] | Promise<any[]>
         /**
          * Called when a client disconnects.
          */
@@ -49,3 +49,5 @@ declare global {
     type IO = SocketIO.Server
   }
 }
+
+export { }
