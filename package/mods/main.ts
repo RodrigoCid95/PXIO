@@ -17,4 +17,3 @@ if (type.includes('http')) {
 if (type.includes('sockets')) {
   initSocketsServer({ http, onError: log })
 }
-log('Ready!')

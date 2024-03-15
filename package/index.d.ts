@@ -1,5 +1,3 @@
-declare type CallbackEmitter<T = undefined> = (args: T) => void | Promise<void>
-
 declare function libraryDecorator(nameLibrary: keyof LibrariesModule): (target: Object, propertyKey: string) => void
 declare function modelDecorator(nameLibrary: keyof ModelsModule): (target: Object, propertyKey: string) => void
 declare function prefixDecorator(prefix: string): <T extends new (...args: any[]) => {}>(constructor: T) => void
@@ -10,6 +8,7 @@ declare global {
   type ConfigModule = typeof import("config")
   type LibrariesModule = typeof import("libraries")
   namespace PXIO {
+    type CallbackEmitter<T = undefined> = (args: T) => void | Promise<void>
     class Emitter {
       on<T = undefined>(callback: CallbackEmitter<T>): string
       off(uuid: string): void

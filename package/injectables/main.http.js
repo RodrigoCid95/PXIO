@@ -65,5 +65,5 @@ export const initHttpServer = ({ onMessage = console.log } = {}) => {
   if (events.beforeStarting) {
     events.beforeStarting(app)
   }
-  return { server, app }
+  return { http: server, app }
 }

@@ -149,7 +149,7 @@
         description: pack.description || '',
         main: './server/main.js',
         scripts: {
-          start: 'node .'
+          start: boot === 'auto' ? `node . --type ${pxioSettings.type}` : ''
         },
         dependencies: pack.dependencies || {},
         license: pack.license || 'ISC'

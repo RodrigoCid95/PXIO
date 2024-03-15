@@ -37,4 +37,4 @@ export class Emitters {
 Emitters.createEmitter = () => {
   return new Emitter()
 }
-export const globalEmitters = new Emitters()
+export const moduleEmitters = new Emitters()

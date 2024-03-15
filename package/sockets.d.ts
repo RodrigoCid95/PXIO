@@ -6,7 +6,7 @@ declare interface Req<S = any> extends http.IncomingMessage {
   session: S
 }
 
-declare function onDecorator(nameEvent: string): (target: Object, propertyKey: string) => void
+declare function onDecorator(nameEvent: 'connect' | 'disconnect' | string): (target: Object, propertyKey: string) => void
 
 declare global {
   namespace PXIOSockets {
@@ -26,23 +26,38 @@ declare global {
        * Events.
        */
       events?: {
-        onBeforeConfig?: (io: SocketIO.Server) => SocketIO.Server | Promise<SocketIO.Server>
+        onBeforeConfig?: (io: SocketIO.Server) => void
         /**
          * Called when a new connection is created.
          */
-        onConnect?: (socket: Socket) => void | Promise<void>
+        onConnect?: (args: {
+          socket: Socket
+          io: SocketIO.Server
+        }) => void | Promise<void>
         /**
          * Called before returning a response to the client.
          */
-        onBeforeToAnswer?: (response: any, socket: Socket, getLibraryInstance: PXIO.Libraries['get']) => any | Promise<any>
+        onBeforeToResponse?: (args: {
+          response: any
+          socket: Socket
+          getLibraryInstance: PXIO.Libraries['get']
+        }) => any | Promise<any>
         /**
          * Called when a call is made by the customer.
          */
-        onANewRequest?: (request: any[], socket: Socket, getLibraryInstance: PXIO.Libraries['get']) => any[] | Promise<any[]>
+        onANewRequest?: (args: {
+          request: any[]
+          socket: Socket
+          getLibraryInstance: PXIO.Libraries['get']
+        }) => any[] | Promise<any[]>
         /**
          * Called when a client disconnects.
          */
-        onDisconnect?: (reason: string, socket: Socket) => void | Promise<void>
+        onDisconnect?: (args: {
+          reason: string
+          socket: Socket
+          io: SocketIO.Server
+        }) => void | Promise<void>
       }
     }
     type OnDecorator = typeof onDecorator
