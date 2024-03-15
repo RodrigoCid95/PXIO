@@ -3,3 +3,5 @@ package-lock.json
 
 .debugger
 .release
+
+data.db

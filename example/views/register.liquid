@@ -1,0 +1,62 @@
+{% layout "layout.liquid" %}
+{% block content %}
+  <header class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
+    <div class="col-md-3 mb-2 mb-md-0">
+      <a href="/" class="d-inline-flex link-body-emphasis text-decoration-none">
+        <span class="fs-4">{{ title }}</span>
+      </a>
+    </div>
+    <div class="col-md-3 text-end">
+      <a class="btn btn-outline-primary me-2" href="/login">Iniciar sesión</a>
+    </div>
+  </header>
+  <main class="form-signin w-100 m-auto">
+    <form style="max-width: 330px;padding: 1rem;margin: 0 auto;">
+      <h1 class="h3 mb-3 fw-normal">Iniciar sesión</h1>
+      <div class="form-floating">
+        <input
+          type="text"
+          class="form-control"
+          id="user_name">
+        <label for="user_name">Nombre de usuario</label>
+      </div>
+      <div class="form-floating">
+        <input
+          type="text"
+          class="form-control"
+          id="full_name">
+        <label for="full_name">Nombre completo</label>
+      </div>
+      <div class="form-floating">
+        <input
+          type="password"
+          class="form-control"
+          id="password">
+        <label for="password">Contraseña</label>
+      </div>
+      <button class="btn btn-primary w-100 py-2 my-3" type="submit">Iniciar sesión</button>
+    </form>
+  </main>
+  <script>
+    (() => {
+      document.querySelector('form').addEventListener('submit', (e) => {
+        e.preventDefault()
+        fetch(
+          '/register',
+          {
+            method: 'post',
+            body: JSON.stringify({
+              user_name: e.target.elements.user_name.value,
+              full_name: e.target.elements.full_name.value,
+              password: e.target.elements.password.value
+            }),
+            headers: {
+              "Content-Type": "application/json"
+            }
+          }
+        )
+          .then(() => window.location.href = '/login')
+      })
+    })()
+  </script>
+{% endblock %}
