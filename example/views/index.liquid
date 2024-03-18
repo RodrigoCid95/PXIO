@@ -25,7 +25,7 @@
         <div class="col-md-8 offset-md-2 full-height d-flex flex-column">
           <div class="card border-primary flex-grow-1 h-100">
             <div class="card-header bg-primary text-white">
-              Chat - {{ user.full_name }}
+              Chat - {{ session.user.full_name }}
               <a class="btn btn-outline-light float-end" href="/logout">Cerrar sesión</a>
             </div>
             <div class="card-body overflow-auto d-block" id="chat-box"></div>

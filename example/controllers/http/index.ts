@@ -3,31 +3,34 @@ import { v4, v5 } from 'uuid'
 
 declare const Model: PXIO.ModelDecorator
 declare const On: PXIOHTTP.OnDecorator
+declare const View: PXIOHTTP.ViewDecorator
 declare const METHODS: PXIOHTTP.METHODS
 declare const BeforeMiddleware: PXIOHTTP.BeforeMiddlewareDecorator
 const { GET, POST } = METHODS
 
 export class IndexController {
   @Model('MiModelo') private model: Models<'MiModelo'>
-  @On(GET, '/')
+
+  @View('/')
   @BeforeMiddleware([verifySession])
-  public index(req: PXIOHTTP.Request<Chat.SessionData>, res: PXIOHTTP.Response): void {
-    const { user } = req.session
-    res.render('index', { title: 'Chat', user })
-  }
-  @On(GET, '/login')
+  public index: string = 'index'
+
+  @View('/login', { title: 'Iniciar sesión' })
   @BeforeMiddleware([verifyNotSession])
-  public login(_: PXIOHTTP.Request, res: PXIOHTTP.Response): void {
-    res.render('login', { title: 'Iniciar sesión' })
-  }
+  public login: string = 'login'
+
+  @View('/register', { title: 'Registrarse' })
+  @BeforeMiddleware([verifyNotSession])
+  public register: string = 'register'
+  
   @On(POST, '/login')
   @BeforeMiddleware([verifyNotSession])
   public async logIn(req: PXIOHTTP.Request<Chat.SessionData>, res: PXIOHTTP.Response): Promise<void> {
     const { user_name, password } = req.body
-    const result = await this.model.findUserByUserName(user_name)
+    const result: User.Result | undefined = await this.model.findUserByUserName(user_name)
     if (result) {
       const { uuid } = result
-      const hash = v5(password, uuid)
+      const hash: string = v5(password, uuid)
       if (result.hash_password === hash) {
         req.session.user = result
         res.status(200).json(true)
@@ -38,17 +41,12 @@ export class IndexController {
       res.status(200).json(false)
     }
   }
-  @On(GET, '/register')
-  @BeforeMiddleware([verifyNotSession])
-  public register(_: PXIOHTTP.Request, res: PXIOHTTP.Response): void {
-    res.render('register', { title: 'Registrarse' })
-  }
   @On(POST, '/register')
   @BeforeMiddleware([verifyNotSession])
   public newUser(req: PXIOHTTP.Request, res: PXIOHTTP.Response): void {
     const { user_name, full_name, password } = req.body
-    const uuid = v4()
-    const hash_password = v5(password, uuid)
+    const uuid: string = v4()
+    const hash_password: string = v5(password, uuid)
     this.model.createUser({
       uuid,
       user_name,
@@ -59,6 +57,6 @@ export class IndexController {
   }
   @On(GET, '/logout')
   public logout(req: PXIOHTTP.Request, res: PXIOHTTP.Response) {
-    req.session.destroy(() => res.redirect('/login'))
+    req.session.destroy((): void => res.redirect('/login'))
   }
 }
