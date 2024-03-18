@@ -23,9 +23,9 @@ for (const controllerName of controllersName) {
       }
     }
     const r: any[] = [router]
-    if (controller.prefix) {
-      r.unshift(`/${controller.prefix}`)
-      delete controller.prefix
+    if (controller.$namespace) {
+      r.unshift(`/${controller.$namespace}`)
+      delete controller.$namespace
     }
     routers.push(r)
   }

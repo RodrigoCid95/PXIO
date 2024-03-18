@@ -80,10 +80,10 @@ export function View(path, args = {}) {
     }
   }
 }
-export function Prefix(prefix) {
+export function Namespace(namespace) {
   return function (constructor) {
     return class extends constructor {
-      $prefix = prefix
+      $namespace = namespace
     }
   }
 }
