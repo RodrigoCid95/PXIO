@@ -9,6 +9,10 @@ declare enum Methods {
   ALL = ''
 }
 
+declare function prefixDecorator(prefix: string): <T extends new (...args: any[]) => {}>(constructor: T) => void
+
+declare function viewDecorator(path: string, options?: object): (target: Object, propertyKey: string) => void
+
 declare function onDecorator(method: Methods, path: string): (target: Object, propertyKey: string) => void
 declare function onDecorator(methods: Methods[], path: string): (target: Object, propertyKey: string) => void
 
@@ -90,6 +94,7 @@ declare global {
     }
     type METHODS = typeof Methods
     type OnDecorator = typeof onDecorator
+    type ViewDecorator = typeof viewDecorator
     type ResponseError = {
       code?: string
       message: string
@@ -109,6 +114,13 @@ declare global {
     interface Request<S = {}> extends express.Request {
       session: express.Request['session'] & Partial<S>
     }
+    interface VIEW {
+      path: string
+      view: string
+      middlewares: Middleware[]
+    }
+    type VIEWS = VIEW[]
+    type PrefixDecorator = typeof prefixDecorator
   }
 }
 
