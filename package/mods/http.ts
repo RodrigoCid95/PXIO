@@ -7,6 +7,11 @@ const controllersName = Object.keys(httpControllers)
 for (const controllerName of controllersName) {
   const Controller = httpControllers[controllerName]
   if (Controller.prototype) {
+    let namespace = undefined
+    if (Controller.$namespace) {
+      namespace = Controller.$namespace
+      delete Controller.$namespace
+    }
     const { $routes = [] } = Controller.prototype
     const controller = new Controller()
     delete Controller.prototype.$routes
@@ -23,9 +28,8 @@ for (const controllerName of controllersName) {
       }
     }
     const r: any[] = [router]
-    if (controller.$namespace) {
-      r.unshift(`/${controller.$namespace}`)
-      delete controller.$namespace
+    if (namespace) {
+      r.unshift(namespace[0] === '/' ? namespace : `/${namespace}`)
     }
     routers.push(r)
   }
