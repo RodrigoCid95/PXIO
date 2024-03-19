@@ -1,6 +1,8 @@
 declare function libraryDecorator(nameLibrary: keyof LibrariesModule): (target: Object, propertyKey: string) => void
 declare function modelDecorator(nameLibrary: keyof ModelsModule): (target: Object, propertyKey: string) => void
 
+declare function namespaceDecorator(namespace: string): <T extends new (...args: any[]) => {}>(constructor: T) => void
+
 declare global {
   type ModelsModule = typeof import('models')
   type Models<T extends keyof ModelsModule> = InstanceType<ModelsModule[T]>
@@ -31,6 +33,7 @@ declare global {
     }
     type LibraryDecorator = typeof libraryDecorator
     type ModelDecorator = typeof modelDecorator
+    type NamespaceDecorator = typeof namespaceDecorator
   }
 }
 

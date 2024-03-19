@@ -1,44 +1,45 @@
 import type { Server } from 'socket.io'
 
-const loadRouters = (io: Server) => {
+const loadNamespaces = (io: Server) => {
   const socketsControllersPath = './socketsControllers.js'
-  const socketsControllers = require(socketsControllersPath)
-  const routers: any[] = []
-  const indices = Object.keys(socketsControllers)
+  const socketsControllers: object = require(socketsControllersPath)
+  const indices: string[] = Object.keys(socketsControllers)
+  const namespaces: any = []
   for (const controllerName of indices) {
     const Controller = socketsControllers[controllerName]
     if (Controller.prototype) {
-      const { routes = false } = Controller.prototype
-      if (routes) {
-        delete Controller.prototype.routes
-        const controller = new Controller(io)
-        let prefix = ''
-        if (Controller.prefix) {
-          prefix = Controller.prefix
-          delete Controller.prefix
-        }
-        for (let { nameEvent, propertyKey } of routes) {
-          nameEvent = prefix !== '' ? `${prefix} ${nameEvent}` : nameEvent
-          routers.push({
+      let $namespace: string = '/'
+      if (Controller.$namespace) {
+        $namespace = Controller.$namespace[0] === '/' ? Controller.$namespace : `/${Controller.$namespace}`
+        delete Controller.$namespace
+      }
+      const namespace: any = {
+        value: $namespace === '/' ? io : io.of($namespace),
+        onConnectCallbacks: [],
+        routes: [],
+        onDisconnectCallbacks: []
+      }
+      let routes = []
+      if (Controller.prototype.$routes) {
+        routes = Controller.prototype.$routes
+        delete Controller.prototype.$routes
+      }
+      const controller = new Controller(namespace.value)
+      for (const { nameEvent, propertyKey } of routes) {
+        if (nameEvent === 'connect') {
+          namespace.onConnectCallbacks.push(controller[propertyKey].bind(controller))
+        } else if (nameEvent === 'disconnect') {
+          namespace.onDisconnectCallbacks.push(controller[propertyKey].bind(controller))
+        } else {
+          namespace.routes.push({
             nameEvent,
             callback: controller[propertyKey].bind(controller)
           })
         }
-        if (Controller.prototype.onConnection) {
-          if (!Object.prototype.hasOwnProperty.call(routers, 'connectCallbacks')) {
-            Object.defineProperty(routers, 'connectCallbacks', { value: [], writable: false })
-          }
-          (routers as any).connectCallbacks.push(controller['onConnection'].bind(controller))
-        }
-        if (Controller.prototype.onDisconnecting) {
-          if (!Object.prototype.hasOwnProperty.call(routers, 'disconnectingCallbacks')) {
-            Object.defineProperty(routers, 'disconnectingCallbacks', { value: [], writable: false })
-          }
-          (routers as any).disconnectingCallbacks.push(controller['onDisconnecting'].bind(controller))
-        }
       }
+      namespaces.push(namespace)
     }
   }
-  return routers
+  return namespaces
 }
-export default loadRouters
+export default loadNamespaces

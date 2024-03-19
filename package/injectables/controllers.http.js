@@ -80,13 +80,6 @@ export function View(path, args = {}) {
     }
   }
 }
-export function Namespace(namespace) {
-  return function (constructor) {
-    return class extends constructor {
-      $namespace = namespace
-    }
-  }
-}
 export const METHODS = {
   GET: 'get',
   POST: 'post',

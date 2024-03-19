@@ -9,3 +9,9 @@ export function Model(model) {
     })
   }
 }
+export function Namespace(namespace) {
+  return function (constructor) {
+    constructor.$namespace = namespace
+    return constructor
+  }
+}

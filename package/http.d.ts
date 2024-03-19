@@ -9,8 +9,6 @@ declare enum Methods {
   ALL = ''
 }
 
-declare function prefixDecorator(prefix: string): <T extends new (...args: any[]) => {}>(constructor: T) => void
-
 declare function viewDecorator(path: string, options?: object): (target: Object, propertyKey: string) => void
 
 declare function onDecorator(method: Methods, path: string): (target: Object, propertyKey: string) => void
@@ -120,7 +118,6 @@ declare global {
       middlewares: Middleware[]
     }
     type VIEWS = VIEW[]
-    type PrefixDecorator = typeof prefixDecorator
   }
 }
 
