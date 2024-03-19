@@ -48,8 +48,8 @@
       </div>
     </div>
     <script type="module">
-      import {io} from '/socket.io/socket.io.esm.min.js'
-      const socket = io()
+      import { io } from '/socket.io/socket.io.esm.min.js'
+      const socket = io('/chat')
       socket.on("connect", () => {
         document.getElementById('message-form').addEventListener('submit', e => {
           e.preventDefault()
