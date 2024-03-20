@@ -1,5 +1,21 @@
 import express from 'express'
 
+interface Middlewares {
+  before?: any[]
+  after?: any[]
+}
+
+interface Route {
+  methods: string[]
+  path: string
+  method: any
+  middlewares?: Middlewares
+}
+
+interface Routes {
+  [x: string]: Route
+}
+
 const httpControllersPath = './httpControllers.js'
 const httpControllers = require(httpControllersPath)
 const routers: any[] = []
@@ -12,17 +28,28 @@ for (const controllerName of controllersName) {
       namespace = Controller.$namespace
       delete Controller.$namespace
     }
-    const { $routes = [] } = Controller.prototype
+    let beforeMiddlewares: any[] = []
+    if (Controller.$beforeMiddlewares) {
+      beforeMiddlewares = Controller.$beforeMiddlewares
+    }
+    let afterMiddlewares: any[] = []
+    if (Controller.$afterMiddlewares) {
+      afterMiddlewares = Controller.$afterMiddlewares
+    }
+    let $routes: Routes = {}
+    if (Controller.prototype.$routes) {
+      $routes = Controller.prototype.$routes
+      delete Controller.prototype.$routes
+    }
     const controller = new Controller()
-    delete Controller.prototype.$routes
     const router = express.Router()
     const routeKeys = Object.keys($routes)
     for (const key of routeKeys) {
-      let { methods, path, method, middlewares = {} } = $routes[key]
+      let { methods, path, method, middlewares = { before: [], after: [] } } = $routes[key]
       let { before = [], after = [] } = middlewares
       before = before.map(mid => (typeof mid === 'string' ? controller[mid] : mid).bind(controller))
       after = after.map(mid => (typeof mid === 'string' ? controller[mid] : mid).bind(controller))
-      const mids = [...before, method.bind(controller), ...after]
+      const mids = [...beforeMiddlewares, ...before, method.bind(controller), ...after, ...afterMiddlewares]
       for (const m of methods) {
         router[m || 'all'](path, ...mids)
       }

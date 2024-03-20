@@ -1,3 +1,15 @@
+export function Namespace(namespace, mws = {}) {
+  return function (constructor) {
+    constructor.$namespace = namespace
+    if (mws.before) {
+      constructor.$beforeMiddlewares = mws.before
+    }
+    if (mws.after) {
+      constructor.$afterMiddlewares = mws.after
+    }
+    return constructor
+  }
+}
 const registerRoute = (target, propertyKey, descriptor) => {
   if (!target.hasOwnProperty('$routes')) {
     target.$routes = {}
@@ -29,7 +41,9 @@ export function AfterMiddleware(mws) {
       }
       target.$routes[propertyKey].middlewares.after.push(mw)
     }
-    return descriptor
+    if (descriptor) {
+      return descriptor
+    }
   }
 }
 export function BeforeMiddleware(mws) {

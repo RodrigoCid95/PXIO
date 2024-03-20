@@ -9,6 +9,12 @@ declare enum Methods {
   ALL = ''
 }
 
+interface Middlewares {
+  before?: PXIOHTTP.Middleware[]
+  after?: PXIOHTTP.Middleware[]
+}
+declare function namespaceDecorator(namespace: string, mws?: Middlewares): <T extends new (...args: any[]) => {}>(constructor: T) => void
+
 declare function viewDecorator(path: string, options?: object): (target: Object, propertyKey: string) => void
 
 declare function onDecorator(method: Methods, path: string): (target: Object, propertyKey: string) => void
@@ -91,8 +97,9 @@ declare global {
       port?: number;
     }
     type METHODS = typeof Methods
-    type OnDecorator = typeof onDecorator
+    type NamespaceDecorator = typeof namespaceDecorator
     type ViewDecorator = typeof viewDecorator
+    type OnDecorator = typeof onDecorator
     type ResponseError = {
       code?: string
       message: string

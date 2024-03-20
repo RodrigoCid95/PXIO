@@ -6,10 +6,13 @@ declare interface Req<S = any> extends http.IncomingMessage {
   session: S
 }
 
+declare function namespaceDecorator(namespace: string): <T extends new (...args: any[]) => {}>(constructor: T) => void
+
 declare function onDecorator(nameEvent: 'connect' | 'disconnect' | string): (target: Object, propertyKey: string) => void
 
 declare global {
   namespace PXIOSockets {
+    type NamespaceDecorator = typeof namespaceDecorator
     /**
      * Web socket.
      */
