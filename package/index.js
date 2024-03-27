@@ -38,7 +38,7 @@
     paths.releaseDir = pxioSettings.releaseDir
   }
   const modules = [
-    { input: paths.modules.inputs.configurations, output: paths.modules.outputs.configurations },
+    { input: paths.modules.inputs.configurations, output: paths.modules.outputs.configurations, inject: [paths.modules.injects.flags] },
     { input: paths.modules.inputs.configs, output: paths.modules.outputs.configs },
 
     { input: paths.modules.inputs.libraries, output: paths.modules.outputs.libraries, inject: [paths.modules.injects.libraries, paths.modules.injects.emitters] },
@@ -57,7 +57,7 @@
     modules.push({ input: paths.modules.inputs.sockets, output: paths.modules.outputs.sockets })
   }
 
-  const mainInject = [paths.modules.injects.main]
+  const mainInject = [paths.modules.injects.flags, paths.modules.injects.main]
   if (type.includes('http')) {
     mainInject.push(paths.modules.injects.mainHttp)
   }

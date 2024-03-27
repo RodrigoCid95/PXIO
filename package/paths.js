@@ -179,6 +179,9 @@ const paths = {
       get emitters() {
         return path.join(importsPath, 'emitters.js')
       },
+      get flags() {
+        return path.join(importsPath, 'flags.js')
+      },
       get main() {
         return path.join(importsPath, 'main.js')
       },
