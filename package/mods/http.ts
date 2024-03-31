@@ -47,9 +47,9 @@ for (const controllerName of controllersName) {
     for (const key of routeKeys) {
       let { methods, path, method, middlewares = { before: [], after: [] } } = $routes[key]
       let { before = [], after = [] } = middlewares
-      before = before.map(mid => (typeof mid === 'string' ? controller[mid] : mid).bind(controller))
-      after = after.map(mid => (typeof mid === 'string' ? controller[mid] : mid).bind(controller))
-      const mids = [...beforeMiddlewares, ...before, method.bind(controller), ...after, ...afterMiddlewares]
+      before = [...beforeMiddlewares, ...before].map(mid => (typeof mid === 'string' ? controller[mid] : mid).bind(controller))
+      after = [...after, ...afterMiddlewares].map(mid => (typeof mid === 'string' ? controller[mid] : mid).bind(controller))
+      const mids = [...before, method.bind(controller), ...after]
       for (const m of methods) {
         router[m || 'all'](path, ...mids)
       }
