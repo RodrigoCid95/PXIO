@@ -61,6 +61,7 @@ declare global {
       interfaceNetwork: string;
     }
     type Config = {
+      createServer?: (app: express.Express) => any
       middlewares?: any[]
       /**
        * Configuration for body parser.

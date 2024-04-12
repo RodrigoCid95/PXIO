@@ -5,8 +5,6 @@ export const initHttpServer = ({ onMessage = console.log } = {}) => {
   const routers = require(httpRoutersPath).default
   const express = require('express')
   let app = express()
-  const http = require('http')
-  const server = http.createServer(app)
   const {
     port = (process.env.PORT ? parseInt(process.env.PORT) : 3001),
     dev,
@@ -14,7 +12,8 @@ export const initHttpServer = ({ onMessage = console.log } = {}) => {
     middlewares = [],
     pathsPublic,
     engineTemplates,
-    optionsUrlencoded
+    optionsUrlencoded,
+    createServer
   } = configs.get('HTTP') || {}
   app.set('port', port)
   let externalIp = null
@@ -58,6 +57,14 @@ export const initHttpServer = ({ onMessage = console.log } = {}) => {
   }
   if (events.onError) {
     app.use(events.onError)
+  }
+  let server
+  if (createServer) {
+    server = createServer(app)
+  }
+  if (!server) {
+    const http = require('http')
+    server = http.createServer(app)
   }
   server.listen(port, () => {
     onMessage(`Servidor corriendo en: http://localhost:${port}${externalIp ? ` y http://${externalIp}:${port}` : ''}`)
