@@ -1,30 +1,24 @@
 import { verifySession, verifyNotSession } from './middlewares'
 import { v4, v5 } from 'uuid'
 
-declare const Model: PXIO.ModelDecorator
-declare const On: PXIOHTTP.OnDecorator
-declare const View: PXIOHTTP.ViewDecorator
-declare const METHODS: PXIOHTTP.METHODS
-declare const BeforeMiddleware: PXIOHTTP.BeforeMiddlewareDecorator
-const { GET, POST } = METHODS
-
 export class IndexController {
-  @Model('MiModelo') private model: Models<'MiModelo'>
+  @Model('MiModelo')
+  private model: Models<'MiModelo'>
 
+  @Before([verifySession])
   @View('/')
-  @BeforeMiddleware([verifySession])
   public index: string = 'index'
 
+  @Before([verifyNotSession])
   @View('/login', { title: 'Iniciar sesión' })
-  @BeforeMiddleware([verifyNotSession])
   public login: string = 'login'
 
+  @Before([verifyNotSession])
   @View('/register', { title: 'Registrarse' })
-  @BeforeMiddleware([verifyNotSession])
   public register: string = 'register'
   
-  @On(POST, '/login')
-  @BeforeMiddleware([verifyNotSession])
+  @Before([verifyNotSession])
+  @Post('/login')
   public async logIn(req: PXIOHTTP.Request<Chat.SessionData>, res: PXIOHTTP.Response): Promise<void> {
     const { user_name, password } = req.body
     const result: User.Result | undefined = await this.model.findUserByUserName(user_name)
@@ -41,8 +35,8 @@ export class IndexController {
       res.status(200).json(false)
     }
   }
-  @On(POST, '/register')
-  @BeforeMiddleware([verifyNotSession])
+  @Before([verifyNotSession])
+  @Post('/register')
   public newUser(req: PXIOHTTP.Request, res: PXIOHTTP.Response): void {
     const { user_name, full_name, password } = req.body
     const uuid: string = v4()
@@ -55,7 +49,7 @@ export class IndexController {
     })
     res.status(200).json(true)
   }
-  @On(GET, '/logout')
+  @Get('/logout')
   public logout(req: PXIOHTTP.Request, res: PXIOHTTP.Response) {
     req.session.destroy((): void => res.redirect('/login'))
   }
