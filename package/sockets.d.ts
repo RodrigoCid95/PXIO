@@ -1,24 +1,14 @@
-import * as SocketIO from 'socket.io'
-import * as http from 'http'
+import type * as SocketIO from 'socket.io'
+import type * as http from 'http'
 import '.'
 
 declare interface Req<S = any> extends http.IncomingMessage {
   session: S
 }
 
-declare function namespaceDecorator(namespace: string): <T extends new (...args: any[]) => {}>(constructor: T) => void
-
-declare function onDecorator(nameEvent: 'connect' | 'disconnect' | string): (target: Object, propertyKey: string) => void
 
 declare global {
   namespace PXIOSockets {
-    type NamespaceDecorator = typeof namespaceDecorator
-    /**
-     * Web socket.
-     */
-    interface Socket<S = any> extends SocketIO.Socket {
-      readonly request: Req<S>
-    }
     interface Config extends Partial<SocketIO.ServerOptions> {
       /**
       * Port the server is listening on.
@@ -43,7 +33,7 @@ declare global {
         onBeforeToResponse?: (args: {
           response: any
           socket: Socket
-          getLibraryInstance: PXIO.Libraries['get']
+          getLibraryInstance: Libraries['get']
         }) => any | Promise<any>
         /**
          * Called when a call is made by the customer.
@@ -51,7 +41,7 @@ declare global {
         onANewRequest?: (args: {
           request: any[]
           socket: Socket
-          getLibraryInstance: PXIO.Libraries['get']
+          getLibraryInstance: Libraries['get']
         }) => any[] | Promise<any[]>
         /**
          * Called when a client disconnects.
@@ -63,9 +53,15 @@ declare global {
         }) => void | Promise<void>
       }
     }
-    type OnDecorator = typeof onDecorator
-    type IO = SocketIO.Server
   }
+  function On(nameEvent: 'connect' | 'disconnect' | string): (target: Object, propertyKey: string) => void
+  /**
+   * Web socket.
+   */
+  interface Socket<S = any> extends SocketIO.Socket {
+    readonly request: Req<S>
+  }
+  type IO = SocketIO.Server
 }
 
 export { }

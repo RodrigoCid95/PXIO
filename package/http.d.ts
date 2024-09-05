@@ -1,37 +1,36 @@
-import * as express from 'express'
-import BodyParser from 'body-parser'
-
-declare enum Methods {
-  GET = 'get',
-  POST = 'post',
-  PUT = 'put',
-  DELETE = 'delete',
-  ALL = ''
-}
-
-interface Middlewares {
-  before?: PXIOHTTP.Middleware[]
-  after?: PXIOHTTP.Middleware[]
-}
-declare function namespaceDecorator(namespace: string, mws?: Middlewares): <T extends new (...args: any[]) => {}>(constructor: T) => void
-
-declare function viewDecorator(path: string, options?: object): (target: Object, propertyKey: string) => void
-
-declare function onDecorator(method: Methods, path: string): (target: Object, propertyKey: string) => void
-declare function onDecorator(methods: Methods[], path: string): (target: Object, propertyKey: string) => void
-
-declare function afterMiddlewareDecorator(middleware: Array<string | PXIOHTTP.Middleware | PXIOHTTP.ErrorMiddleware>): (target: Object, propertyKey: string) => void
-declare function beforeMiddlewareDecorator(middleware: Array<string | PXIOHTTP.Middleware | PXIOHTTP.ErrorMiddleware>): (target: Object, propertyKey: string) => void
+import type * as express from 'express'
+import type BodyParser from 'body-parser'
+import type { Server } from 'node:net'
 
 declare global {
   namespace PXIOHTTP {
+    /**
+     * The object of an express.js response.
+     */
+    type Response = express.Response
+    /**
+     * The object of an express.js request.
+     */
+    interface Request<S = {}> extends express.Request {
+      session: express.Request['session'] & Partial<S>
+    }
+    type ResponseError = {
+      code?: string
+      message: string
+      stack?: string
+    }
+    type ErrorMiddleware = (error?: ResponseError, req?: Request, res?: PXIOHTTP.Response, next?: Next) => void
+    type Middleware = (req?: PXIOHTTP.Request, res?: PXIOHTTP.Response, next?: Next) => void
+    interface Middlewares {
+      before?: PXIOHTTP.Middleware[]
+      after?: PXIOHTTP.Middleware[]
+    }
     type EngineTemplates = {
       name: string;
       dirViews: string;
       ext: string;
       callback: (path: string, options: object, callback: (e: any, rendered?: string) => void) => void;
     }
-    type Next = express.NextFunction;
     /**
      * List of public routes.
      */
@@ -61,7 +60,7 @@ declare global {
       interfaceNetwork: string;
     }
     type Config = {
-      createServer?: (app: express.Express) => any
+      createServer?: (app: express.Express) => Server
       middlewares?: any[]
       /**
        * Configuration for body parser.
@@ -97,36 +96,23 @@ declare global {
        */
       port?: number;
     }
-    type METHODS = typeof Methods
-    type NamespaceDecorator = typeof namespaceDecorator
-    type ViewDecorator = typeof viewDecorator
-    type OnDecorator = typeof onDecorator
-    type ResponseError = {
-      code?: string
-      message: string
-      stack?: string
-    }
-    type ErrorMiddleware = (error?: ResponseError, req?: Request, res?: Response, next?: Next) => void
-    type Middleware = (req?: Request, res?: Response, next?: Next) => void
-    type AfterMiddlewareDecorator = typeof afterMiddlewareDecorator
-    type BeforeMiddlewareDecorator = typeof beforeMiddlewareDecorator
-    /**
-     * The object of an express.js response.
-     */
-    type Response = express.Response;
-    /**
-     * The object of an express.js request.
-     */
-    interface Request<S = {}> extends express.Request {
-      session: express.Request['session'] & Partial<S>
-    }
-    interface VIEW {
-      path: string
-      view: string
-      middlewares: Middleware[]
-    }
-    type VIEWS = VIEW[]
   }
+  function Middlewares(mws?: PXIOHTTP.Middlewares): <T extends new (...args: any[]) => {}>(constructor: T) => void
+  type Next = express.NextFunction
+  interface VIEW {
+    path: string
+    view: string
+    middlewares: PXIOHTTP.Middleware[]
+  }
+  type VIEWS = VIEW[]
+  function View(path: string, options?: object): (target: Object, propertyKey: string) => void
+  function After(middleware: Array<string | PXIOHTTP.Middleware | PXIOHTTP.ErrorMiddleware>): (target: Object, propertyKey: string) => void
+  function Before(middleware: Array<string | PXIOHTTP.Middleware | PXIOHTTP.ErrorMiddleware>): (target: Object, propertyKey: string) => void
+  function Get(path: string): (target: Object, propertyKey: string) => void
+  function Post(path: string): (target: Object, propertyKey: string) => void
+  function Put(path: string): (target: Object, propertyKey: string) => void
+  function Delete(path: string): (target: Object, propertyKey: string) => void
+  function All(path: string): (target: Object, propertyKey: string) => void
 }
 
 export { }

@@ -155,26 +155,17 @@ const paths = {
       },
     },
     injects: {
-      get libraries() {
-        return path.join(importsPath, 'libraries.js')
-      },
-      get models() {
-        return path.join(importsPath, 'models.js')
-      },
-      get controller() {
-        return path.join(importsPath, 'controllers.js')
+      get config() {
+        return path.join(importsPath, 'config.js')
       },
       get http() {
         return path.join(importsPath, 'controllers.http.js')
       },
+      get controllers() {
+        return path.join(importsPath, 'controllers.js')
+      },
       get sockets() {
         return path.join(importsPath, 'controllers.sockets.js')
-      },
-      get httpMain() {
-        return path.join(importsPath, 'main.http.js')
-      },
-      get socketsMain() {
-        return path.join(importsPath, 'main.sockets.js')
       },
       get emitters() {
         return path.join(importsPath, 'emitters.js')
@@ -182,14 +173,14 @@ const paths = {
       get flags() {
         return path.join(importsPath, 'flags.js')
       },
-      get main() {
-        return path.join(importsPath, 'main.js')
-      },
-      get mainHttp() {
+      get httpMain() {
         return path.join(importsPath, 'main.http.js')
       },
-      get mainSockets() {
+      get socketsMain() {
         return path.join(importsPath, 'main.sockets.js')
+      },
+      get models() {
+        return path.join(importsPath, 'models.js')
       }
     }
   },

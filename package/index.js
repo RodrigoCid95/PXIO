@@ -38,31 +38,75 @@
     paths.releaseDir = pxioSettings.releaseDir
   }
   const modules = [
-    { input: paths.modules.inputs.configurations, output: paths.modules.outputs.configurations, inject: [paths.modules.injects.flags] },
+    {
+      input: paths.modules.inputs.configurations,
+      output: paths.modules.outputs.configurations,
+      inject: [
+        paths.modules.injects.flags,
+        paths.modules.injects.emitters
+      ]
+    },
     { input: paths.modules.inputs.configs, output: paths.modules.outputs.configs },
 
-    { input: paths.modules.inputs.libraries, output: paths.modules.outputs.libraries, inject: [paths.modules.injects.libraries, paths.modules.injects.emitters] },
+    {
+      input: paths.modules.inputs.libraries,
+      output: paths.modules.outputs.libraries,
+      inject: [
+        paths.modules.injects.config,
+        paths.modules.injects.emitters
+      ]
+    },
     { input: paths.modules.inputs.libs, output: paths.modules.outputs.libs },
 
-    { input: paths.modules.inputs.models, output: paths.modules.outputs.models, inject: [paths.modules.injects.models, paths.modules.injects.emitters] },
+    {
+      input: paths.modules.inputs.models,
+      output: paths.modules.outputs.models,
+      inject: [
+        paths.modules.injects.config,
+        paths.modules.injects.emitters,
+        paths.modules.injects.models
+      ]
+    },
     { input: paths.modules.inputs.modls, output: paths.modules.outputs.modls }
   ]
 
   if (type.includes('http')) {
-    modules.push({ input: type.includes('sockets') ? paths.modules.inputs.httpControllers : paths.modules.inputs.controllers, output: paths.modules.outputs.httpControllers, inject: [paths.modules.injects.controller, paths.modules.injects.http] })
+    modules.push({
+      input: type.includes('sockets') ? paths.modules.inputs.httpControllers : paths.modules.inputs.controllers,
+      output: paths.modules.outputs.httpControllers,
+      inject: [
+        paths.modules.injects.config,
+        paths.modules.injects.emitters,
+        paths.modules.injects.controllers,
+        paths.modules.injects.http
+      ]
+    })
     modules.push({ input: paths.modules.inputs.http, output: paths.modules.outputs.http })
   }
   if (type.includes('sockets')) {
-    modules.push({ input: type.includes('http') ? paths.modules.inputs.socketsControllers : paths.modules.inputs.controllers, output: paths.modules.outputs.socketsControllers, inject: [paths.modules.injects.controller, paths.modules.injects.sockets] })
+    modules.push({
+      input: type.includes('http') ? paths.modules.inputs.socketsControllers : paths.modules.inputs.controllers,
+      output: paths.modules.outputs.socketsControllers,
+      inject: [
+        paths.modules.injects.config,
+        paths.modules.injects.emitters,
+        paths.modules.injects.controllers,
+        paths.modules.injects.sockets
+      ]
+    })
     modules.push({ input: paths.modules.inputs.sockets, output: paths.modules.outputs.sockets })
   }
 
-  const mainInject = [paths.modules.injects.flags, paths.modules.injects.main]
+  const mainInject = [
+    paths.modules.injects.config,
+    paths.modules.injects.emitters,
+    paths.modules.injects.flags
+  ]
   if (type.includes('http')) {
-    mainInject.push(paths.modules.injects.mainHttp)
+    mainInject.push(paths.modules.injects.httpMain)
   }
   if (type.includes('sockets')) {
-    mainInject.push(paths.modules.injects.mainSockets)
+    mainInject.push(paths.modules.injects.socketsMain)
   }
   modules.push({ input: boot === 'manual' ? paths.modules.inputs.main : paths.modules.inputs.autoMain, output: paths.modules.outputs.main, inject: mainInject })
 
@@ -130,7 +174,9 @@
             })
           }
         })
-        return esbuild.context(opts)
+        return esbuild.context(opts).catch(error => {
+          console.log(input, error)
+        })
       }
       return esbuild.build(opts)
     }))

@@ -66,11 +66,17 @@ export const initHttpServer = ({ onMessage = console.log } = {}) => {
     const http = require('http')
     server = http.createServer(app)
   }
-  server.listen(port, () => {
+  const listen = server.listen(port, () => {
     onMessage(`Servidor corriendo en: http://localhost:${port}${externalIp ? ` y http://${externalIp}:${port}` : ''}`)
   })
   if (events.beforeStarting) {
     events.beforeStarting(app)
   }
+  process.on('SIGTERM', () => {
+    onMessage('SIGTERM signal received: closing HTTP server')
+    listen.close(() => {
+      onMessage('HTTP server closed')
+    })
+  })
   return { http: server, app }
 }

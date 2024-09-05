@@ -66,7 +66,7 @@ export const initSocketsServer = ({ http, onError = console.error } = {}) => {
           events.onDisconnect(reason, io, socket)
         }
         for (const onDisconnectCallback of onDisconnectCallbacks) {
-          onDisconnectCallback(reason, io, socket)
+          onDisconnectCallback(reason, socket, io)
         }
       })
     })

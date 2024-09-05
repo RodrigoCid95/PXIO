@@ -43,15 +43,13 @@ for (const controllerName of controllersName) {
     }
     const controller = new Controller()
     const router = express.Router()
-    const routeKeys = Object.keys($routes)
-    for (const key of routeKeys) {
-      let { methods, path, method, middlewares = { before: [], after: [] } } = $routes[key]
-      let { before = [], after = [] } = middlewares
-      before = [...beforeMiddlewares, ...before].map(mid => (typeof mid === 'string' ? controller[mid] : mid).bind(controller))
-      after = [...after, ...afterMiddlewares].map(mid => (typeof mid === 'string' ? controller[mid] : mid).bind(controller))
-      const mids = [...before, method.bind(controller), ...after]
-      for (const m of methods) {
-        router[m || 'all'](path, ...mids)
+    for (const [path, route] of Object.entries($routes)) {
+      for (const [method, { callback, middlewares }] of Object.entries(route)) {
+        let { before = [], after = [] } = middlewares
+        before = [...beforeMiddlewares, ...before].map(mid => (typeof mid === 'string' ? controller[mid] : mid).bind(controller))
+        after = [...after, ...afterMiddlewares].map(mid => (typeof mid === 'string' ? controller[mid] : mid).bind(controller))
+        const mids = [...before, callback.bind(controller), ...after]
+        router[method](path, ...mids)
       }
     }
     const r: any[] = [router]
