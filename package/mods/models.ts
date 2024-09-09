@@ -5,7 +5,8 @@ declare const libraries: any
 class Models {
   #instances = {}
   constructor() {
-    for (const [name, Model] of Object.entries(modelsModule) as any[]) {
+    const indices: any[] = modelsModule.default ? Object.entries(modelsModule.default) : Object.entries(modelsModule)
+    for (const [name, Model] of indices) {
       if (Model.prototype) {
         if (Object.prototype.hasOwnProperty.call(Model.prototype, '$libraries')) {
           for (const [propertyKey, lib] of Object.entries(Model.prototype.$libraries)) {

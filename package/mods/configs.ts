@@ -3,7 +3,8 @@ import * as configModule from './modules/config'
 class Configs {
   #profiles = {}
   constructor() {
-    for (const [name, config] of Object.entries(configModule)) {
+    const indices: any[] = configModule.default ? Object.entries(configModule.default) : Object.entries(configModule)
+    for (const [name, config] of indices) {
       Object.defineProperty(this.#profiles, name as string, { value: config, writable: false })
     }
   }
