@@ -13,7 +13,11 @@ class Models {
       if (Model.prototype) {
         if (Object.prototype.hasOwnProperty.call(Model.prototype, '$libraries')) {
           for (const [propertyKey, lib] of Object.entries(Model.prototype.$libraries)) {
-            Object.defineProperty(Model.prototype, propertyKey, { value: libraries.get(lib), writable: false })
+            Object.defineProperty(Model.prototype, propertyKey, {
+              get() {
+                return libraries.get(lib)
+              }
+            })
           }
           delete Model.prototype.$libraries
         }
