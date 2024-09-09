@@ -18,7 +18,7 @@ module.exports = ({ type, boot, resources = [], loader }, log) => {
       sourcemap: true,
       color: true,
       banner: {
-        js: `const isRelease = false;\n${config ? `const configs = require('./../config').configs` : banner ? banner : ''}`
+        js: `const isRelease = true;\n${config ? `const configs = require('./../config').configs` : banner ? banner : ''}`
       },
       external,
       absWorkingDir: process.env.PWD,
