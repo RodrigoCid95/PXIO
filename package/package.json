@@ -1,5 +1,5 @@
 {
-  "name": "package2",
+  "name": "px.io",
   "version": "0.12.12-beta",
   "main": "lib/index.js",
   "bin": {
