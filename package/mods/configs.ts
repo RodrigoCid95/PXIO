@@ -1,13 +1,12 @@
+import * as configModule from './modules/config'
+
 class Configs {
   #profiles = {}
   constructor() {
-    const configPath = './configurations.js'
-    const configModule = require(configPath)
-    const indices = Object.keys(configModule)
-    for (const indice of indices) {
-      Object.defineProperty(this.#profiles, indice, { value: configModule[indice], writable: false })
+    for (const [name, config] of Object.entries(configModule)) {
+      Object.defineProperty(this.#profiles, name as string, { value: config, writable: false })
     }
   }
-  get = (name) => this.#profiles[name]
+  get = (name: string) => this.#profiles[name]
 }
 export const configs = new Configs()

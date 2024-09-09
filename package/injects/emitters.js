@@ -1,4 +1,4 @@
-export class Emitter {
+class Emitter {
   #CALLBACKS = {}
   on(callback) {
     const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
@@ -19,7 +19,7 @@ export class Emitter {
     }
   }
 }
-export class Emitters {
+class Emitters {
   #EMITTERS = new Map()
   on(event, callback) {
     if (!this.#EMITTERS.has(event)) {
@@ -37,4 +37,5 @@ export class Emitters {
 Emitters.createEmitter = () => {
   return new Emitter()
 }
-export const moduleEmitters = new Emitters()
+const moduleEmitters = new Emitters()
+export { moduleEmitters, Emitters }

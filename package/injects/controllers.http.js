@@ -1,4 +1,4 @@
-export function Middlewares(mws = {}) {
+function Middlewares(mws = {}) {
   return function (constructor) {
     if (mws.before) {
       constructor.$beforeMiddlewares = mws.before
@@ -9,6 +9,7 @@ export function Middlewares(mws = {}) {
     return constructor
   }
 }
+
 const registerRoute = ({
   path,
   method,
@@ -31,6 +32,7 @@ const registerRoute = ({
     }
   }
 }
+
 const findRoute = (target, propertyKey) => {
   for (const [path, route] of Object.entries(target.$routes)) {
     for (const [method, value] of Object.entries(route)) {
@@ -40,7 +42,8 @@ const findRoute = (target, propertyKey) => {
     }
   }
 }
-export function After(mws) {
+
+function After(mws) {
   return (target, propertyKey, descriptor) => {
     const route = findRoute(target, propertyKey)
     if (route) {
@@ -65,7 +68,8 @@ export function After(mws) {
     }
   }
 }
-export function Before(mws) {
+
+function Before(mws) {
   return (target, propertyKey, descriptor) => {
     const route = findRoute(target, propertyKey)
     if (route) {
@@ -90,7 +94,8 @@ export function Before(mws) {
     }
   }
 }
-export function Get(path) {
+
+function Get(path) {
   return (target, propertyKey, descriptor) => {
     registerRoute({
       path,
@@ -102,7 +107,8 @@ export function Get(path) {
     return descriptor
   }
 }
-export function Post(path) {
+
+function Post(path) {
   return (target, propertyKey, descriptor) => {
     registerRoute({
       path,
@@ -114,7 +120,8 @@ export function Post(path) {
     return descriptor
   }
 }
-export function Put(path) {
+
+function Put(path) {
   return (target, propertyKey, descriptor) => {
     registerRoute({
       path,
@@ -126,7 +133,8 @@ export function Put(path) {
     return descriptor
   }
 }
-export function Delete(path) {
+
+function Delete(path) {
   return (target, propertyKey, descriptor) => {
     registerRoute({
       path,
@@ -138,7 +146,8 @@ export function Delete(path) {
     return descriptor
   }
 }
-export function All(path) {
+
+function All(path) {
   return (target, propertyKey, descriptor) => {
     registerRoute({
       path,
@@ -150,7 +159,8 @@ export function All(path) {
     return descriptor
   }
 }
-export function View(path, args = {}) {
+
+function View(path, args = {}) {
   return (target, propertyKey) => {
     let value = undefined
     Get(path)(target, propertyKey, {
@@ -169,4 +179,16 @@ export function View(path, args = {}) {
       }
     }
   }
+}
+
+export {
+  Middlewares,
+  After,
+  Before,
+  Get,
+  Post,
+  Put,
+  Delete,
+  All,
+  View
 }

@@ -1,5 +1,5 @@
 declare global {
-  const flags: Flags
+  const isRelease: boolean
   function Namespace(namespace: string): <T extends new (...args: any[]) => {}>(constructor: T) => void
   type ConfigModule = typeof import("config")
   class Configs {
@@ -27,6 +27,7 @@ declare global {
   class Flags {
     get(name: string): string | number | boolean
   }
+  const flags: Flags
   class Libraries {
     get<K extends keyof LibrariesModule>(name: K): LibrariesModule[K]
     get<T = {}>(name: keyof LibrariesModule): T

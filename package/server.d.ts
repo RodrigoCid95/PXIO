@@ -13,8 +13,8 @@ declare type InitHttpServerResult = {
 }
 
 declare global {
-  function initHttpServer(options: { onMessage?: (message: string) => void; }): InitHttpServerResult
-  function initSocketsServer(options: OptionsSocketsServer): SocketIO.Server
+  function initHttpServer(options?: { onMessage?: (message: string) => void; }): InitHttpServerResult
+  function initSocketsServer(options?: OptionsSocketsServer): SocketIO.Server
 }
 
 export { }

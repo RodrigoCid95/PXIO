@@ -1,8 +1,5 @@
-export const initHttpServer = ({ onMessage = console.log } = {}) => {
-  const configPath = './config.js'
-  const { configs } = require(configPath)
-  const httpRoutersPath = './http.js'
-  const routers = require(httpRoutersPath).default
+function initHttpServer({ onMessage = console.log } = {}) {
+  const routers = require('./lib/http').default
   const express = require('express')
   let app = express()
   const {
@@ -80,3 +77,5 @@ export const initHttpServer = ({ onMessage = console.log } = {}) => {
   })
   return { http: server, app }
 }
+
+export { initHttpServer }

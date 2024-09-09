@@ -1,4 +1,7 @@
 import express from 'express'
+import * as httpControllers from './modules/http'
+
+declare const models: any
 
 interface Middlewares {
   before?: any[]
@@ -16,8 +19,6 @@ interface Routes {
   [x: string]: Route
 }
 
-const httpControllersPath = './httpControllers.js'
-const httpControllers = require(httpControllersPath)
 const routers: any[] = []
 const controllersName = Object.keys(httpControllers)
 for (const controllerName of controllersName) {
@@ -40,6 +41,13 @@ for (const controllerName of controllersName) {
     if (Controller.prototype.$routes) {
       $routes = Controller.prototype.$routes
       delete Controller.prototype.$routes
+    }
+    if (Object.prototype.hasOwnProperty.call(Controller.prototype, '$models')) {
+      const { $models } = Controller.prototype
+      for (const [propertyKey, name] of Object.entries($models)) {
+        Object.defineProperty(Controller.prototype, propertyKey, { value: models.get(name), writable: false })
+      }
+      delete Controller.prototype.$models
     }
     const controller = new Controller()
     const router = express.Router()

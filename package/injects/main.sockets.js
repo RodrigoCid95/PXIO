@@ -1,9 +1,5 @@
-export const initSocketsServer = ({ http, onError = console.error } = {}) => {
-  const configPath = './config.js'
-  const { configs } = require(configPath)
-  const libsPath = './libs.js'
-  const { libraries } = require(libsPath)
-  const socketsRoutersPath = './sockets.js'
+function initSocketsServer({ http, onError = console.error } = {}) {
+  const { libraries } = require('./lib/libs')
   const SocketIO = require('socket.io')
   let io = null
   const pxioSocketsConfig = configs.get('WS') || {}
@@ -16,7 +12,7 @@ export const initSocketsServer = ({ http, onError = console.error } = {}) => {
   } else {
     io = SocketIO(port, pxioSocketsConfig)
   }
-  const loadRouters = require(socketsRoutersPath).default
+  const loadRouters = require('./lib/sockets').default
   const namespaces = loadRouters(io)
   for (const { value: namespace, onConnectCallbacks, routes, onDisconnectCallbacks } of namespaces) {
     if (events.onBeforeConfig) {
@@ -73,3 +69,5 @@ export const initSocketsServer = ({ http, onError = console.error } = {}) => {
   }
   return io
 }
+
+export { initSocketsServer }

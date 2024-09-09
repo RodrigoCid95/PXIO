@@ -1,8 +1,8 @@
+import * as libsModule from './modules/libs'
+
 class Libraries {
   #instances = {}
   constructor() {
-    const libsPath = './libraries.js'
-    const libsModule = require(libsPath)
     const indices = Object.keys(libsModule)
     for (const indice of indices) {
       const libResult = libsModule[indice]()
@@ -15,6 +15,6 @@ class Libraries {
       }
     }
   }
-  get = (name) => this.#instances[name]
+  get = (name: string) => this.#instances[name]
 }
 export const libraries = new Libraries()

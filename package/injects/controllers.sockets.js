@@ -1,4 +1,4 @@
-export function On(nameEvent) {
+function On(nameEvent) {
   return (target, propertyKey, descriptor) => {
     if (!target.hasOwnProperty('$routes')) {
       target.$routes = []
@@ -7,3 +7,5 @@ export function On(nameEvent) {
     return descriptor
   }
 }
+
+export { On }

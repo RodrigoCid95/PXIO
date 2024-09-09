@@ -30,4 +30,5 @@ class Flags {
     return this.args[name]
   }
 }
-export const flags = new Flags()
+const flags = new Flags()
+export { flags }

@@ -1,8 +1,9 @@
 import type { Server } from 'socket.io'
+import * as socketsControllers from './modules/sockets'
+
+declare const models: any
 
 const loadNamespaces = (io: Server) => {
-  const socketsControllersPath = './socketsControllers.js'
-  const socketsControllers: object = require(socketsControllersPath)
   const indices: string[] = Object.keys(socketsControllers)
   const namespaces: any = []
   for (const controllerName of indices) {
@@ -23,6 +24,13 @@ const loadNamespaces = (io: Server) => {
       if (Controller.prototype.$routes) {
         routes = Controller.prototype.$routes
         delete Controller.prototype.$routes
+      }
+      if (Object.prototype.hasOwnProperty.call(Controller.prototype, '$models')) {
+        const { $models } = Controller.prototype
+        for (const [propertyKey, name] of Object.entries($models)) {
+          Object.defineProperty(Controller.prototype, propertyKey, { value: models.get(name), writable: false })
+        }
+        delete Controller.prototype.$models
       }
       const controller = new Controller(namespace.value)
       for (const { nameEvent, propertyKey } of routes) {

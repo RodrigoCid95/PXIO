@@ -1,13 +1,9 @@
-declare const isRelease: boolean
-declare const flags: any
-declare const initHttpServer: any
-declare const initSocketsServer: any
 const type = flags.get('type')
 const log = (message) => {
-  if (isRelease) {
-    console.log(message)
-  } else {
+  if (!isRelease && process.send) {
     process.send(message)
+  } else {
+    console.log(message)
   }
 }
 let http: any = undefined

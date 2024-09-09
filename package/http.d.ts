@@ -26,10 +26,10 @@ declare global {
       after?: PXIOHTTP.Middleware[]
     }
     type EngineTemplates = {
-      name: string;
-      dirViews: string;
-      ext: string;
-      callback: (path: string, options: object, callback: (e: any, rendered?: string) => void) => void;
+      name: string
+      dirViews: string
+      ext: string
+      callback: (path: string, options: object, callback: (e: any, rendered?: string) => void) => void
     }
     /**
      * List of public routes.
@@ -39,12 +39,12 @@ declare global {
        * Route.
        * @type {string}
        */
-      route: string;
+      route: string
       /**
        * Directory.
        * @type {string}
        */
-      dir: string;
+      dir: string
     }
     /**
      * Options for development.
@@ -53,11 +53,11 @@ declare global {
       /**
        * Indicates whether the server will print the external IP (LAN) on the terminal.
        */
-      showExternalIp: boolean;
+      showExternalIp: boolean
       /**
        * Name of the network interface.
        */
-      interfaceNetwork: string;
+      interfaceNetwork: string
     }
     type Config = {
       createServer?: (app: express.Express) => Server
@@ -65,11 +65,11 @@ declare global {
       /**
        * Configuration for body parser.
        */
-      optionsUrlencoded?: BodyParser.OptionsUrlencoded;
+      optionsUrlencoded?: BodyParser.OptionsUrlencoded
       /**
        * Set up a templating engine.
        */
-      engineTemplates?: EngineTemplates;
+      engineTemplates?: EngineTemplates
       /**
        * Events of Gorila HTTP.
        */
@@ -78,23 +78,23 @@ declare global {
         /**
          * Called before the express.js instance is configured.
          */
-        beforeConfig?: (app: express.Express) => void;
+        beforeConfig?: (app: express.Express) => void
         /**
          * Called after the express.js instance is configured.
          */
-        afterConfig?: (app: express.Express) => void;
+        afterConfig?: (app: express.Express) => void
         /**
          * Called after the server starts.
          */
-        beforeStarting?: (app: express.Express) => void;
+        beforeStarting?: (app: express.Express) => void
       };
-      pathsPublic?: PathPublic[];
-      dev?: Dev;
+      pathsPublic?: PathPublic[]
+      dev?: Dev
       /**
        * Port the server is listening on.
        * @type {number}
        */
-      port?: number;
+      port?: number
     }
   }
   function Middlewares(mws?: PXIOHTTP.Middlewares): <T extends new (...args: any[]) => {}>(constructor: T) => void
