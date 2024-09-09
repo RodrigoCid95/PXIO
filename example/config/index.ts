@@ -17,10 +17,10 @@ export const HTTP: PXIOHTTP.Config = {
     name: 'liquid',
     ext: 'liquid',
     callback: (new Liquid({
-      layouts: path.resolve(__dirname, '..', 'views'),
+      layouts: path.resolve(process.cwd(), 'views'),
       extname: 'liquid'
     })).express(),
-    dirViews: path.resolve(__dirname, '..', 'views')
+    dirViews: path.resolve(process.cwd(), 'views')
   },
   middlewares: [
     compression(),
@@ -49,5 +49,5 @@ export const WS: PXIOSockets.Config = {
 }
 
 export const database: Database.Config = {
-  path: path.resolve(__dirname, '..', 'data.db')
+  path: path.resolve(process.cwd(), 'data.db')
 }
