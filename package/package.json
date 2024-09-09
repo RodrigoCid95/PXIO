@@ -1,6 +1,6 @@
 {
   "name": "px.io",
-  "version": "0.12.13-beta",
+  "version": "0.12.14-beta",
   "main": "lib/index.js",
   "bin": {
     "pxio": "lib/index.js"
