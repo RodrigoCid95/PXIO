@@ -27,7 +27,8 @@ module.exports = ({ type, boot }, watch = undefined) => {
       name: 'Library module',
       input: path.join(PWD, 'libraries', 'index.ts'),
       inject: [
-        path.join(injectables, 'flags.js')
+        path.join(injectables, 'flags.js'),
+        path.join(injectables, 'emitters.js')
       ],
       config: true,
       outfile: path.join(dist, 'lib', 'modules', 'libs.js')
@@ -37,6 +38,7 @@ module.exports = ({ type, boot }, watch = undefined) => {
       input: path.join(PWD, 'models', 'index.ts'),
       inject: [
         path.join(injectables, 'flags.js'),
+        path.join(injectables, 'emitters.js'),
         path.join(injectables, 'models.js')
       ],
       config: true,
@@ -50,6 +52,7 @@ module.exports = ({ type, boot }, watch = undefined) => {
       input: isDual ? path.join(PWD, 'controllers', 'http', 'index.ts') : path.join(PWD, 'controllers', 'index.ts'),
       inject: [
         path.join(injectables, 'flags.js'),
+        path.join(injectables, 'emitters.js'),
         path.join(injectables, 'controllers.js'),
         path.join(injectables, 'controllers.http.js')
       ],
@@ -63,6 +66,7 @@ module.exports = ({ type, boot }, watch = undefined) => {
       input: isDual ? path.join(PWD, 'controllers', 'sockets', 'index.ts') : path.join(PWD, 'controllers', 'index.ts'),
       inject: [
         path.join(injectables, 'flags.js'),
+        path.join(injectables, 'emitters.js'),
         path.join(injectables, 'controllers.js'),
         path.join(injectables, 'controllers.sockets.js')
       ],
