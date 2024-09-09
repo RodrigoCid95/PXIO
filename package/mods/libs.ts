@@ -3,7 +3,10 @@ import * as libsModule from './modules/libs'
 class Libraries {
   #instances = {}
   constructor() {
-    const indices: any[] = libsModule.default ? Object.entries(libsModule.default) : Object.entries(libsModule)
+    let indices: any[] = Object.entries(libsModule)
+    if (Object.prototype.hasOwnProperty.call(libsModule, 'default')) {
+      indices = Object.entries(libsModule.default)
+    }
     for (const [name, lib] of indices) {
       const libResult = lib()
       if (libResult instanceof Promise) {
