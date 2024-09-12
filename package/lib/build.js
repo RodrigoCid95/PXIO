@@ -32,19 +32,31 @@ module.exports = ({ type, boot, resources = [], loader }, log) => {
   }
   const package = require(process.env.npm_package_json)
   const packageName = package.name || 'pxio-server'
+  const main = 'server/main.js'
+  const bin = {
+    [packageName]: 'server/main.js'
+  }
+  const version = package.version || '1.0.0'
+  const description = package.description || ''
+  const scripts = {
+    start: `node . --type ${type}`
+  }
+  const license = package.license || 'ISC'
   const newPackage = {
+    ...package,
     name: packageName,
-    version: package.version || '1.0.0',
-    description: package.description || '',
-    main: 'server/main.js',
-    bin: {
-      [packageName]: 'server/main.js'
-    },
-    scripts: {
-      start: `node . --type ${type}`
-    },
-    dependencies: package.dependencies || {},
-    license: package.license || 'ISC'
+    main,
+    bin,
+    version,
+    description,
+    scripts,
+    license
+  }
+  if (newPackage.devDependencies) {
+    delete newPackage.devDependencies
+  }
+  if (newPackage.pxio) {
+    delete newPackage.pxio
   }
   fs.writeFileSync(path.join(PWD, 'dist', 'package.json'), JSON.stringify(newPackage, null, '\t'), 'utf-8')
   log('Compilado!')
