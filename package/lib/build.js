@@ -4,6 +4,7 @@ const { buildSync } = require('esbuild')
 const generate = require('./generate')
 
 module.exports = ({ type, boot, resources = [], loader }, log) => {
+  const { PWD = process.cwd() } = process.env
   const { modules, plugins } = generate({ type, boot })
   for (const { name, input, inject, outfile, config, banner, external } of modules) {
     log(`Compilando: ${name}`)
@@ -21,12 +22,11 @@ module.exports = ({ type, boot, resources = [], loader }, log) => {
         js: `const isRelease = true;\n${config ? `const configs = require('./../config').configs` : banner ? banner : ''}`
       },
       external,
-      absWorkingDir: process.env.PWD,
+      absWorkingDir: PWD,
       loader,
       plugins
     })
   }
-  const { PWD } = process.env
   for (const resource of resources) {
     fs.cpSync(path.join(PWD, resource), path.join(PWD, 'dist', resource), { recursive: true, force: true })
   }

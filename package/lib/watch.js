@@ -5,7 +5,7 @@ const { context } = require('esbuild')
 const generate = require('./generate')
 
 module.exports = async ({ type, boot, loader }, log, args) => {
-  const { PWD } = process.env
+  const { PWD = process.cwd() } = process.env
   let isRunning = false
   let childProcess = null
   const initServer = () => {
@@ -28,7 +28,7 @@ module.exports = async ({ type, boot, loader }, log, args) => {
       }
     }
   )
-  const builders = await Promise.all(modules.map(({ name, input, inject, outfile, config, banner, external }) => context({
+  const builders = await Promise.all(modules.map(({ input, inject, outfile, config, banner, external }) => context({
     entryPoints: [input],
     bundle: true,
     inject,
@@ -42,7 +42,7 @@ module.exports = async ({ type, boot, loader }, log, args) => {
       js: `const isRelease = false;\n${config ? `const configs = require('./../config').configs` : banner ? banner : ''}`
     },
     external,
-    absWorkingDir: process.env.PWD,
+    absWorkingDir: PWD,
     loader,
     plugins
   })))

@@ -35,7 +35,7 @@ module.exports = (type, log) => {
     log('Instalando @types/node ...')
     install('@types/node', true)
   }
-  const declarationsPath = path.join(process.env.PWD, 'declarations.d.ts')
+  const declarationsPath = path.join(process.env.PWD || process.cwd(), 'declarations.d.ts')
   if (!fs.existsSync(declarationsPath)) {
     fs.writeFileSync(declarationsPath, "import 'px.io'\nimport 'px.io/server'\nimport 'px.io/http'\nimport 'px.io/sockets'", { encoding: 'utf-8' })
   }

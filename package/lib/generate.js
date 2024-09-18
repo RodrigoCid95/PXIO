@@ -2,7 +2,7 @@ const fs = require('node:fs')
 const path = require('node:path')
 
 module.exports = ({ type, boot }, watch = undefined) => {
-  const { PWD } = process.env
+  const { PWD = process.cwd() } = process.env
   const injectables = path.resolve(__dirname, '..', 'injects')
   const mods = path.resolve(__dirname, '..', 'mods')
   const distPath = []
