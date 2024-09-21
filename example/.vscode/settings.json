@@ -1,0 +1,9 @@
+{
+	"files.exclude": {
+		"**/.debugger": true,
+		"**/node_modules": true,
+		"**/tsconfig.json": true,
+		"**/package*": true,
+		"**/declarations.d.ts": true
+	}
+}
