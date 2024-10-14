@@ -1,4 +1,3 @@
-const fs = require('node:fs')
 const path = require('node:path')
 const { fork } = require('node:child_process')
 const { context } = require('esbuild')
@@ -15,7 +14,7 @@ module.exports = async ({ type, boot, loader }, log, args) => {
     childProcess.on('error', log)
   }
   const { modules, plugins } = generate(
-    { type, boot },
+    { type, boot, isRelease: false },
     result => {
       if (isRunning) {
         if (!childProcess?.killed) {
@@ -28,7 +27,8 @@ module.exports = async ({ type, boot, loader }, log, args) => {
       }
     }
   )
-  const builders = await Promise.all(modules.map(({ input, inject, outfile, config, banner, external }) => context({
+  const builders = await Promise.all(modules.map(({ input, inject, outfile, external, alias, define }) => context({
+    alias,
     entryPoints: [input],
     bundle: true,
     inject,
@@ -38,13 +38,12 @@ module.exports = async ({ type, boot, loader }, log, args) => {
     platform: 'node',
     sourcemap: true,
     color: true,
-    banner: {
-      js: `const isRelease = false;\n${config ? `const configs = require('./../config').configs` : banner ? banner : ''}`
-    },
     external,
     absWorkingDir: PWD,
     loader,
-    plugins
+    plugins,
+    treeShaking: true,
+    define
   })))
   await Promise.all(builders.map(builder => builder.watch()))
   initServer()

@@ -1,15 +1,9 @@
-const type = flags.get('type')
-const log = (message) => {
-  if (!isRelease && process.send) {
-    process.send(message)
-  } else {
-    console.log(message)
-  }
-}
+declare const IS_HTTP: boolean
+declare const IS_SOCKETS: boolean
+declare const IS_RELEASE: boolean
+
+let log = (message: string) => console.log(message)
+!IS_RELEASE && (log = (message: string) => process.send(message))
 let http: any = undefined
-if (type.includes('http')) {
-  http = initHttpServer({ onMessage: log }).http
-}
-if (type.includes('sockets')) {
-  initSocketsServer({ http, onError: log })
-}
+IS_HTTP && (http = initHttpServer({ onMessage: log }).http)
+IS_SOCKETS && initSocketsServer({ http, onError: log })

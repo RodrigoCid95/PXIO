@@ -1,14 +1,14 @@
 {
-  "name": "px.io",
-  "version": "0.13.19-beta",
-  "main": "lib/index.js",
-  "bin": {
-    "pxio": "lib/index.js"
-  },
-  "scripts": {
-    "start": "node ."
-  },
-  "repository": {
+	"name": "px.io",
+	"version": "0.15.20-beta",
+	"main": "lib/index.js",
+	"bin": {
+		"pxio": "lib/index.js"
+	},
+	"scripts": {
+		"start": "node ."
+	},
+	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/RodrigoCid95/PXIO.git"
 	},
@@ -25,11 +25,11 @@
 	],
 	"author": "Rodrigo Cid <rodrigocid95@gmail.com>",
 	"license": "MIT",
-  "dependencies": {
-    "@types/express": "^4.17.21",
-    "@types/express-session": "^1.18.0",
-    "@types/node": "^22.5.4",
-    "esbuild": "^0.23.1",
-    "socket.io": "^4.7.5"
-  }
+	"dependencies": {
+		"@types/express": "^4.17.21",
+		"@types/express-session": "^1.18.0",
+		"@types/node": "^22.5.4",
+		"esbuild": "^0.23.1",
+		"socket.io": "^4.7.5"
+	}
 }

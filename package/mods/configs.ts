@@ -1,16 +1,9 @@
-import * as configModule from './modules/config'
+import * as configModule from 'config'
 
-class Configs {
-  #profiles = {}
-  constructor() {
-    let indices: any[] = Object.entries(configModule)
-    if (Object.prototype.hasOwnProperty.call(configModule, 'default')) {
-      indices = Object.entries(configModule.default)
-    }
-    for (const [name, config] of indices) {
-      Object.defineProperty(this.#profiles, name as string, { value: config, writable: false })
-    }
-  }
-  get = (name: string) => this.#profiles[name]
+const profiles = {}
+let indices: any[] = Object.entries(configModule)
+for (const [name, config] of indices) {
+  Object.defineProperty(profiles, name as string, { value: config, writable: false })
 }
-export const configs = new Configs()
+
+export default (name: string) => profiles[name]

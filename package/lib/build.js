@@ -5,26 +5,26 @@ const generate = require('./generate')
 
 module.exports = ({ type, boot, resources = [], loader }, log) => {
   const { PWD = process.cwd() } = process.env
-  const { modules, plugins } = generate({ type, boot })
-  for (const { name, input, inject, outfile, config, banner, external } of modules) {
+  const { modules, plugins } = generate({ type, boot, isRelease: true })
+  for (const { name, input, inject, outfile, external, alias, define } of modules) {
     log(`Compilando: ${name}`)
     buildSync({
+      alias,
       entryPoints: [input],
       bundle: true,
       inject,
       outfile,
-      target: 'node18',
+      target: 'node22',
       format: 'cjs',
       platform: 'node',
       sourcemap: true,
       color: true,
-      banner: {
-        js: `const isRelease = true;\n${config ? `const configs = require('./../config').configs` : banner ? banner : ''}`
-      },
       external,
       absWorkingDir: PWD,
       loader,
-      plugins
+      plugins,
+      treeShaking: true,
+      define
     })
   }
   for (const resource of resources) {

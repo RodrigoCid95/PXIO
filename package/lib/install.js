@@ -80,7 +80,7 @@ module.exports = async (type, log) => {
       output: process.stdout
     })
     const res = await new Promise((resolve) => {
-      rl.question('¿Deseas agregar configuracion de VSCode? (s/n): ', (answer = 'n') => {
+      rl.question('¿Deseas agregar configuración de VSCode? (s/n): ', (answer = 'n') => {
         rl.close()
         resolve(answer.toLowerCase() === 's')
       })

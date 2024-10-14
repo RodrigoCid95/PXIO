@@ -1,8 +1,9 @@
 function initSocketsServer({ http, onError = console.error } = {}) {
-  const { libraries } = require('./lib/libs')
+  const getLib = require('./modules/libs').default
   const SocketIO = require('socket.io')
+  const getConfig = require('./modules/configs').default
   let io = null
-  const pxioSocketsConfig = configs.get('WS') || {}
+  const pxioSocketsConfig = getConfig('WS') || {}
   const {
     port = process.env.PORT ? parseInt(process.env.PORT) : 80,
     events = {}
@@ -12,7 +13,7 @@ function initSocketsServer({ http, onError = console.error } = {}) {
   } else {
     io = SocketIO(port, pxioSocketsConfig)
   }
-  const loadRouters = require('./lib/sockets').default
+  const loadRouters = require('./modules/sockets').default
   const namespaces = loadRouters(io)
   for (const { value: namespace, onConnectCallbacks, routes, onDisconnectCallbacks } of namespaces) {
     if (events.onBeforeConfig) {
@@ -31,15 +32,14 @@ function initSocketsServer({ http, onError = console.error } = {}) {
           if (typeof args[args.length - 1] === 'function') {
             reply = args.pop()
           }
-          const { get } = libraries
           try {
             if (events.onANewRequest) {
-              args = await events.onANewRequest({ args, socket, getLibraryInstance: get.bind(libraries) })
+              args = await events.onANewRequest({ args, socket, getLibraryInstance: getLib })
             }
             args.push(socket)
             let response = { response: await callback(...args) }
             if (events.onBeforeToResponse && reply) {
-              response = await events.onBeforeToResponse({ response, socket, getLibraryInstance: get.bind(libraries) })
+              response = await events.onBeforeToResponse({ response, socket, getLibraryInstance: getLib })
             }
             if (reply) {
               reply(response)
@@ -47,7 +47,7 @@ function initSocketsServer({ http, onError = console.error } = {}) {
           } catch ({ message, stack }) {
             let error = { error: { message, stack } }
             if (events.onBeforeToResponse && reply) {
-              error = await events.onBeforeToResponse({ error, socket, getLibraryInstance: get.bind(libraries) })
+              error = await events.onBeforeToResponse({ error, socket, getLibraryInstance: getLib })
             }
             onError(message)
             onError(stack)

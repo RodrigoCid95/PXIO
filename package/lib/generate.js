@@ -1,7 +1,7 @@
 const fs = require('node:fs')
 const path = require('node:path')
 
-module.exports = ({ type, boot }, watch = undefined) => {
+module.exports = ({ type, boot, isRelease }, watch = undefined) => {
   const { PWD = process.cwd() } = process.env
   const injectables = path.resolve(__dirname, '..', 'injects')
   const mods = path.resolve(__dirname, '..', 'mods')
@@ -15,118 +15,87 @@ module.exports = ({ type, boot }, watch = undefined) => {
   const dist = path.join(PWD, ...distPath)
   const modules = [
     {
-      name: 'Config module',
-      input: path.join(PWD, 'config', 'index.ts'),
+      name: 'Configurations module',
+      input: path.join(mods, 'configs.ts'),
       inject: [
-        path.join(injectables, 'flags.js'),
-        path.join(injectables, 'emitters.js')
+        path.join(injectables, 'flags.js')
       ],
-      outfile: path.join(dist, 'lib', 'modules', 'config.js')
+      define: {
+        IS_RELEASE: isRelease ? 'true' : 'false'
+      },
+      outfile: path.join(dist, 'modules', 'configs.js'),
+      alias: { 'config': path.join(PWD, 'config') },
     },
     {
-      name: 'Library module',
-      input: path.join(PWD, 'libraries', 'index.ts'),
+      name: 'Libraries module',
+      input: path.join(mods, 'libs.ts'),
       inject: [
         path.join(injectables, 'flags.js'),
-        path.join(injectables, 'emitters.js')
+        path.join(injectables, 'configs.js')
       ],
-      config: true,
-      outfile: path.join(dist, 'lib', 'modules', 'libs.js')
+      outfile: path.join(dist, 'modules', 'libs.js'),
+      alias: { 'libs': path.join(PWD, 'libraries') },
+      ext: ['./configs'],
     },
     {
       name: 'Models module',
-      input: path.join(PWD, 'models', 'index.ts'),
+      input: path.join(mods, 'models.ts'),
       inject: [
         path.join(injectables, 'flags.js'),
-        path.join(injectables, 'emitters.js'),
+        path.join(injectables, 'configs.js'),
         path.join(injectables, 'models.js')
       ],
-      config: true,
-      outfile: path.join(dist, 'lib', 'modules', 'models.js')
+      outfile: path.join(dist, 'modules', 'models.js'),
+      alias: { 'models': path.join(PWD, 'models') },
+      ext: ['./libs'],
     }
   ]
-  const isDual = type.split('-').length > 1
   if (type.includes('http')) {
     modules.push({
       name: 'HTTP Controllers module',
-      input: isDual ? path.join(PWD, 'controllers', 'http', 'index.ts') : path.join(PWD, 'controllers', 'index.ts'),
+      input: path.join(mods, 'http.ts'),
       inject: [
         path.join(injectables, 'flags.js'),
-        path.join(injectables, 'emitters.js'),
         path.join(injectables, 'controllers.js'),
         path.join(injectables, 'controllers.http.js')
       ],
-      config: true,
-      outfile: path.join(dist, 'lib', 'modules', 'http.js')
+      outfile: path.join(dist, 'modules', 'http.js'),
+      alias: { 'http': path.join(PWD, 'controllers', 'http') },
+      ext: ['./models'],
     })
   }
   if (type.includes('sockets')) {
     modules.push({
       name: 'Sockets Controllers module',
-      input: isDual ? path.join(PWD, 'controllers', 'sockets', 'index.ts') : path.join(PWD, 'controllers', 'index.ts'),
+      input: path.join(mods, 'sockets.ts'),
       inject: [
         path.join(injectables, 'flags.js'),
-        path.join(injectables, 'emitters.js'),
         path.join(injectables, 'controllers.js'),
         path.join(injectables, 'controllers.sockets.js')
       ],
-      config: true,
-      outfile: path.join(dist, 'lib', 'modules', 'sockets.js')
+      outfile: path.join(dist, 'modules', 'sockets.js'),
+      alias: { 'sockets': path.join(PWD, 'controllers', 'sockets') },
+      ext: ['./models'],
     })
-  }
-  modules.push({
-    name: 'Configurations',
-    input: path.join(mods, 'configs.ts'),
-    outfile: path.join(dist, 'lib', 'config.js'),
-    ext: ['./modules/*']
-  })
-  modules.push({
-    name: 'Libraries',
-    input: path.join(mods, 'libs.ts'),
-    outfile: path.join(dist, 'lib', 'libs.js'),
-    ext: ['./modules/*']
-  })
-  modules.push({
-    name: 'Models',
-    input: path.join(mods, 'models.ts'),
-    outfile: path.join(dist, 'lib', 'models.js'),
-    ext: ['./modules/*'],
-    banner: `const { libraries } = require('./libs.js');`
-  })
-  if (type.includes('http')) {
-    modules.push({
-      name: 'HTTP',
-      input: path.join(mods, 'http.ts'),
-      outfile: path.join(dist, 'lib', 'http.js'),
-      ext: ['./modules/*'],
-      banner: `const { models } = require('./models.js');`
-    })
-  }
-  if (type.includes('sockets')) {
-    modules.push({
-      name: 'Sockets',
-      input: path.join(mods, 'sockets.ts'),
-      outfile: path.join(dist, 'lib', 'sockets.js'),
-      ext: ['./modules/*'],
-      banner: `const { models } = require('./models.js');`
-    })
-  }
-  if (type.includes('sockets')) {
-  }
-  const inject = [path.join(injectables, 'flags.js')]
-  if (type.includes('http')) {
-    inject.push(path.join(injectables, 'main.http.js'))
-  }
-  if (type.includes('sockets')) {
-    inject.push(path.join(injectables, 'main.sockets.js'))
   }
   modules.push({
     name: 'Boot',
     input: boot === 'manual' ? path.join(PWD, 'main.ts') : path.join(mods, 'main.ts'),
-    inject,
-    banner: `const configs = require('./lib/config').configs;`,
+    inject: [
+      path.join(injectables, 'flags.js'),
+      path.join(injectables, 'configs.js'),
+      path.join(injectables, 'main.http.js'),
+      path.join(injectables, 'main.sockets.js')
+    ],
+    define: {
+      BOOT: `"${boot}"`,
+      IS_HTTP: type.includes('http') ? 'true' : 'false',
+      IS_SOCKETS: type.includes('sockets') ? 'true' : 'false',
+      IS_HTTP_SOCKETS: type === 'http-sockets' ? 'true' : 'false',
+      IS_RELEASE: isRelease ? 'true' : 'false'
+    },
     outfile: path.join(dist, 'main.js'),
-    ext: ['./lib/*']
+    ext: ['./modules/*']
   })
   for (const { input } of modules) {
     if (!fs.existsSync(input)) {

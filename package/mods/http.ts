@@ -1,5 +1,6 @@
 import express from 'express'
-import * as httpControllers from './modules/http'
+import * as httpControllers from 'http'
+import getModel from './models'
 
 declare const models: any
 
@@ -44,8 +45,8 @@ for (const controllerName of controllersName) {
     }
     if (Object.prototype.hasOwnProperty.call(Controller.prototype, '$models')) {
       const { $models } = Controller.prototype
-      for (const [propertyKey, name] of Object.entries($models)) {
-        Object.defineProperty(Controller.prototype, propertyKey, { value: models.get(name), writable: false })
+      for (const [propertyKey, name] of Object.entries<string>($models)) {
+        Object.defineProperty(Controller.prototype, propertyKey, { value: getModel(name), writable: false })
       }
       delete Controller.prototype.$models
     }

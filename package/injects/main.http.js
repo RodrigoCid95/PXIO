@@ -1,5 +1,6 @@
 function initHttpServer({ onMessage = console.log } = {}) {
-  const routers = require('./lib/http').default
+  const routers = require('./modules/http').default
+  const getConfig = require('./modules/configs').default
   const express = require('express')
   let app = express()
   const {
@@ -11,7 +12,7 @@ function initHttpServer({ onMessage = console.log } = {}) {
     engineTemplates,
     optionsUrlencoded,
     createServer
-  } = configs.get('HTTP') || {}
+  } = getConfig('HTTP') || {}
   app.set('port', port)
   let externalIp = null
   if (dev && dev.showExternalIp) {
