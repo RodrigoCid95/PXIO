@@ -21,7 +21,7 @@ export class IndexController {
   @Post('/login')
   public async logIn(req: PXIOHTTP.Request<Chat.SessionData>, res: PXIOHTTP.Response): Promise<void> {
     const { user_name, password } = req.body
-    const result: User.Result | undefined = await this.model.findUserByUserName(user_name)
+    const result = await emitToWorker<User.Result | undefined>('api.users:findByUserName', user_name)
     if (result) {
       const { uuid } = result
       const hash: string = v5(password, uuid)
@@ -35,6 +35,7 @@ export class IndexController {
       res.status(200).json(false)
     }
   }
+
   @Before([verifyNotSession])
   @Post('/register')
   public newUser(req: PXIOHTTP.Request, res: PXIOHTTP.Response): void {
@@ -49,6 +50,7 @@ export class IndexController {
     })
     res.status(200).json(true)
   }
+  
   @Get('/logout')
   public logout(req: PXIOHTTP.Request, res: PXIOHTTP.Response) {
     req.session.destroy((): void => res.redirect('/login'))
