@@ -3,20 +3,20 @@ const { fork } = require('node:child_process')
 const { context } = require('esbuild')
 const generate = require('./generate')
 
-module.exports = async ({ type, boot, loader }, log, args) => {
+module.exports = async ({ type, boot, loader, outDir, omitAuto }, log, args) => {
   const { PWD = process.cwd() } = process.env
   let isRunning = false
   let childProcess = null
   const initServer = () => {
     log('Iniciando servidor...')
-    childProcess = fork(path.join(PWD, '.debugger', 'main.js'), ['--type', type, ...args])
+    childProcess = fork(path.join(outDir, 'main.js'), args)
     childProcess.on('message', log)
     childProcess.on('error', log)
   }
   const { modules, plugins } = generate(
-    { type, boot, isRelease: false },
+    { type, boot, isRelease: false, outDir, omitAuto },
     result => {
-      if (isRunning) {
+      if (isRunning && !omitAuto) {
         if (!childProcess?.killed) {
           childProcess.kill()
           log('Servidor detenido!')
@@ -46,7 +46,9 @@ module.exports = async ({ type, boot, loader }, log, args) => {
     define
   })))
   await Promise.all(builders.map(builder => builder.watch()))
-  initServer()
-  isRunning = true
+  if (!omitAuto) {
+    initServer()
+    isRunning = true
+  }
   log('Listo!')
 }

@@ -1,18 +1,11 @@
 const fs = require('node:fs')
 const path = require('node:path')
 
-module.exports = ({ type, boot, isRelease }, watch = undefined) => {
+module.exports = ({ type, boot, isRelease, outDir, omitAuto }, watch = undefined) => {
   const { PWD = process.cwd() } = process.env
   const injectables = path.resolve(__dirname, '..', 'injects')
   const mods = path.resolve(__dirname, '..', 'mods')
-  const distPath = []
-  if (watch) {
-    distPath.push('.debugger')
-  } else {
-    distPath.push('dist')
-    distPath.push('server')
-  }
-  const dist = path.join(PWD, ...distPath)
+  const dist = path.join(outDir)
   const modules = [
     {
       name: 'Configurations module',
@@ -78,6 +71,20 @@ module.exports = ({ type, boot, isRelease }, watch = undefined) => {
       ext: ['./models'],
     })
   }
+  if (type.includes('workers')) {
+    modules.push({
+      name: 'Workers module',
+      input: path.join(mods, 'workers.ts'),
+      inject: [
+        path.join(injectables, 'flags.js'),
+        path.join(injectables, 'controllers.js'),
+        path.join(injectables, 'controllers.workers.js')
+      ],
+      outfile: path.join(dist, 'modules', 'workers.js'),
+      alias: { 'workers': path.join(PWD, 'controllers', 'workers') },
+      ext: ['./models'],
+    })
+  }
   modules.push({
     name: 'Boot',
     input: boot === 'manual' ? path.join(PWD, 'main.ts') : path.join(mods, 'main.ts'),
@@ -85,14 +92,18 @@ module.exports = ({ type, boot, isRelease }, watch = undefined) => {
       path.join(injectables, 'flags.js'),
       path.join(injectables, 'configs.js'),
       path.join(injectables, 'main.http.js'),
-      path.join(injectables, 'main.sockets.js')
+      path.join(injectables, 'main.sockets.js'),
+      path.join(injectables, 'main.workers.js')
     ],
     define: {
       BOOT: `"${boot}"`,
       IS_HTTP: type.includes('http') ? 'true' : 'false',
       IS_SOCKETS: type.includes('sockets') ? 'true' : 'false',
-      IS_HTTP_SOCKETS: type === 'http-sockets' ? 'true' : 'false',
-      IS_RELEASE: isRelease ? 'true' : 'false'
+      IS_WORKERS: type.includes('workers') ? 'true' : 'false',
+      IS_HTTP_SOCKETS: type.includes('http') && type.includes('sockets') ? 'true' : 'false',
+      IS_HTTP_SOCKETS_WORKERS: type.includes('http') && type.includes('sockets') && type.includes('workers') ? 'true' : 'false',
+      IS_RELEASE: isRelease ? 'true' : 'false',
+      OMIT_AUTO: omitAuto ? 'true' : 'false'
     },
     outfile: path.join(dist, 'main.js'),
     ext: ['./modules/*']

@@ -14,7 +14,7 @@
     }
   }
   const loadConfig = require('./config')
-  const config = loadConfig()
+  const config = loadConfig(command === 'start')
   if (command && ['start', 'build'].includes(command)) {
     if (command === 'build') {
       const build = require('./build')

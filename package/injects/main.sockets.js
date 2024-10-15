@@ -5,7 +5,7 @@ function initSocketsServer({ http, onError = console.error } = {}) {
   let io = null
   const pxioSocketsConfig = getConfig('WS') || {}
   const {
-    port = process.env.PORT ? parseInt(process.env.PORT) : 80,
+    port = process.env.PORT ? parseInt(process.env.PORT) : 3002,
     events = {}
   } = pxioSocketsConfig
   if (http) {

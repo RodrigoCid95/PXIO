@@ -2,8 +2,6 @@ import express from 'express'
 import * as httpControllers from 'http'
 import getModel from './models'
 
-declare const models: any
-
 interface Middlewares {
   before?: any[]
   after?: any[]
@@ -25,7 +23,7 @@ const controllersName = Object.keys(httpControllers)
 for (const controllerName of controllersName) {
   const Controller = httpControllers[controllerName]
   if (Controller.prototype) {
-    let namespace = undefined
+    let namespace: string[] | undefined = undefined
     if (Controller.$namespace) {
       namespace = Controller.$namespace
       delete Controller.$namespace
@@ -63,7 +61,7 @@ for (const controllerName of controllersName) {
     }
     const r: any[] = [router]
     if (namespace) {
-      r.unshift(namespace[0] === '/' ? namespace : `/${namespace}`)
+      r.unshift(`/${namespace.join('/')}`)
     }
     routers.push(r)
   }

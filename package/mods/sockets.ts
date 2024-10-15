@@ -2,21 +2,19 @@ import type { Server } from 'socket.io'
 import * as socketsControllers from 'sockets'
 import getModel from './models'
 
-declare const models: any
-
 const loadNamespaces = (io: Server) => {
   const indices: string[] = Object.keys(socketsControllers)
   const namespaces: any = []
   for (const controllerName of indices) {
     const Controller = socketsControllers[controllerName]
     if (Controller.prototype) {
-      let $namespace: string = '/'
+      let $namespace: string | undefined = undefined
       if (Controller.$namespace) {
-        $namespace = Controller.$namespace[0] === '/' ? Controller.$namespace : `/${Controller.$namespace}`
+        $namespace = `/${Controller.$namespace.join('/')}`
         delete Controller.$namespace
       }
       const namespace: any = {
-        value: $namespace === '/' ? io : io.of($namespace),
+        value: $namespace === undefined ? io : io.of($namespace),
         onConnectCallbacks: [],
         routes: [],
         onDisconnectCallbacks: []
@@ -29,7 +27,7 @@ const loadNamespaces = (io: Server) => {
       if (Object.prototype.hasOwnProperty.call(Controller.prototype, '$models')) {
         const { $models } = Controller.prototype
         for (const [propertyKey, name] of Object.entries<string>($models)) {
-          Object.defineProperty(Controller.prototype, propertyKey, { value:getModel(name), writable: false })
+          Object.defineProperty(Controller.prototype, propertyKey, { value: getModel(name), writable: false })
         }
         delete Controller.prototype.$models
       }

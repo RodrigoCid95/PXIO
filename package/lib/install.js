@@ -91,7 +91,7 @@ module.exports = async (type, log) => {
           "**/.debugger": true,
           "**/node_modules": true,
           "**/tsconfig.json": true,
-          "**/package*": true,
+          "**/package-lock.json": true,
           "**/declarations.d.ts": true,
         }
       }, null, '\t'))
