@@ -38,7 +38,7 @@
 			".sql": "text"
 		},
 		"outDir": ".debugger",
-		"omitAuto": true
+		"omitAuto": false
 	},
 	"devDependencies": {
 		"@types/compression": "^1.7.5",

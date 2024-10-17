@@ -1,7 +1,16 @@
+import EventEmitter from 'node:events'
 import * as workersControllers from 'workers'
 import getModel from './models'
 
-const routes = {}
+const workersEmitter = new EventEmitter()
+const responseEmitter = new EventEmitter()
+
+responseEmitter.on('emit', (id: string, data?: any) => {
+  if (process.send) {
+    process.send({ id, data })
+  }
+})
+
 const values = Object.values<any>(workersControllers)
 for (const Controller of values) {
   if (Controller.prototype && Controller.prototype.$routes) {
@@ -26,24 +35,19 @@ for (const Controller of values) {
       }
       path.push(nameEvent)
       const routeName = path.join(':')
-      routes[routeName] = controller[propertyKey].bind(controller)
+      workersEmitter.on(routeName, async (id: Message['id'], args: Message['args']) => {
+        const data = await controller[propertyKey].bind(controller)(...args)
+        responseEmitter.emit('emit', id, data)
+      })
     }
   }
 }
 
-const response = (id: string, data?: any) => {
-  if (process.send) {
-    process.send({ id, data })
-  }
-}
-
 process.on('message', async ({ id, nameEvent, args }: Message) => {
-  const route = routes[nameEvent]
-  let data = null
-  if (route) {
-    data = await route(...args)
+  const eventNames = workersEmitter.eventNames()
+  if (eventNames.includes(nameEvent)) {
+    workersEmitter.emit(nameEvent, id, args)
   }
-  response(id, data)
 })
 
 process.stdin.resume()
