@@ -4,6 +4,7 @@ const instances = {}
 const keys = Object.keys(libsModule)
 const values = Object
   .values<any>(libsModule)
+  .filter(lib => typeof lib === 'function')
   .map(lib => lib())
 Promise
   .all(values)
