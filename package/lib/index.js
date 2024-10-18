@@ -14,7 +14,7 @@
     }
   }
   const loadConfig = require('./config')
-  const config = loadConfig(command === 'start')
+  const config = await loadConfig(command === 'start')
   if (command && ['start', 'build'].includes(command)) {
     if (command === 'build') {
       const build = require('./build')
@@ -25,6 +25,6 @@
     }
   } else {
     const install = require('./install')
-    install(config.type, log)
+    install(config, log)
   }
 })(process.argv.slice(2))
