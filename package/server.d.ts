@@ -15,7 +15,7 @@ declare type InitHttpServerResult = {
 declare global {
   function initHttpServer(options?: { onMessage?: (message: string) => void; }): InitHttpServerResult
   function initSocketsServer(options?: OptionsSocketsServer): SocketIO.Server
-  type EmitToWorker = <T = null>(nameEvent: string, args?: any[]) => Promise<T>
+  type EmitToWorker = <T = null>(nameEvent: string, ...args: any[]) => Promise<T>
   function initWorkerServer(isGlobal?: boolean): EmitToWorker
   const emitToWorker: EmitToWorker
 }
