@@ -97,21 +97,7 @@ module.exports = async ({ type, boot }, log) => {
         "strictNullChecks": true,
         "esModuleInterop": true,
         "allowSyntheticDefaultImports": true,
-        "module": "ES2022",
-        "paths": {
-          "config/*": [
-            "config/*"
-          ],
-          "controllers/*": [
-            "controllers/*"
-          ],
-          "libraries/*": [
-            "libraries/*"
-          ],
-          "models/*": [
-            "models/*"
-          ]
-        }
+        "module": "ES2022"
       }
     }, null, '\t'))
   }
