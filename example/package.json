@@ -1,7 +1,7 @@
 {
 	"name": "example",
 	"version": "1.0.0",
-	"description": "Este es un proyecto de ejemplo basado en [PX.IO](https://pxio-docs.vercel.app).",
+	"description": "Este es un proyecto de ejemplo basado en [PX.IO](https://www.npmjs.com/package/px.io).",
 	"main": "index.js",
 	"scripts": {
 		"init": "pxio",
@@ -37,7 +37,6 @@
 		"loader": {
 			".sql": "text"
 		},
-		"outDir": ".debugger",
 		"omitAuto": false
 	},
 	"devDependencies": {
