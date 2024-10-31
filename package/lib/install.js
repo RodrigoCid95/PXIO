@@ -7,7 +7,8 @@ const install = async (name, dev = false) => {
   const result = execSync(`npm i ${name}${dev ? ' -D' : ''}`, { encoding: 'utf-8', cwd: process.env.PDW })
   console.log(result)
 }
-module.exports = async ({ type, boot }, log) => {
+module.exports = async (config, log) => {
+  const { type, boot } = config
   const CWD = process.env.PWD || process.cwd()
   const configModulePath = path.join(CWD, 'config', 'index.ts')
   if (!fs.existsSync(configModulePath)) {
@@ -15,11 +16,11 @@ module.exports = async ({ type, boot }, log) => {
     fs.mkdirSync(configModuleDir, { recursive: true, force: true })
     fs.writeFileSync(configModulePath, '')
   }
-  const librsModulePath = path.join(CWD, 'libraries', 'index.ts')
-  if (!fs.existsSync(librsModulePath)) {
-    const librsModuleDir = path.dirname(librsModulePath)
-    fs.mkdirSync(librsModuleDir, { recursive: true, force: true })
-    fs.writeFileSync(librsModulePath, '')
+  const libsModulePath = path.join(CWD, 'libraries', 'index.ts')
+  if (!fs.existsSync(libsModulePath)) {
+    const libsModuleDir = path.dirname(libsModulePath)
+    fs.mkdirSync(libsModuleDir, { recursive: true, force: true })
+    fs.writeFileSync(libsModulePath, '')
   }
   const modelsModulePath = path.join(CWD, 'models', 'index.ts')
   if (!fs.existsSync(modelsModulePath)) {
@@ -145,6 +146,7 @@ module.exports = async ({ type, boot }, log) => {
     scripts.build = 'pxio build'
   }
   package.scripts = scripts
+  package.pxio = config
   const dependenciesList = Object.keys(dependencies)
   const devDependenciesList = Object.keys(devDependencies)
   fs.writeFileSync(process.env.npm_package_json, JSON.stringify(package, null, '\t'))

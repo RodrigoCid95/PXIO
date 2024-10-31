@@ -32,105 +32,85 @@ module.exports = async (isDebugging = false) => {
   const { pxio = {} } = package
   let {
     omitAuto,
-    boot = '',
+    boot,
     resources = [],
     loader = {},
-    type = []
+    type = [],
+    outDir
   } = pxio
-  let writeConfig = false
+  const typeFlag = getFlag('type') || getFlag('t')
+  if (typeof typeFlag === 'string') {
+    const typeFiltered = typeFlag.split(',').filter(s => ['http', 'sockets', 'workers'].includes(s))
+    if (typeFiltered.length > 0) {
+      type = typeFiltered
+    }
+  }
   if (type.length === 0) {
-    let ask = false
-    const typeFlag = getFlag('type') || getFlag('t')
-    if (typeFlag && typeof typeFlag === 'string') {
-      const typeFiltered = typeFlag.split(',').filter(s => ['http', 'sockets', 'workers'].includes(s))
-      if (typeFiltered.length === 0) {
-        ask = true
-      } else {
-        type = typeFiltered
-      }
-    } else {
-      ask = true
-    }
-    if (ask) {
-      const { typeProyect } = await prompt([
-        {
-          type: 'checkbox',
-          name: 'typeProyect',
-          message: 'Selecciona que tipo de servidor quieres usar:',
-          choices: [
-            { name: 'HTTP', value: 'http' },
-            { name: 'Sockets', value: 'sockets' },
-            { name: 'Workers', value: 'workers' },
-          ],
-          validate: (answer) => {
-            if (answer.length < 1) {
-              return 'Debes seleccionar al menos una opción.'
-            }
-            return true
-          },
+    const { typeProject } = await prompt([
+      {
+        type: 'checkbox',
+        name: 'typeProject',
+        message: 'Selecciona que tipo de servidor quieres usar:',
+        choices: [
+          { name: 'HTTP', value: 'http' },
+          { name: 'Sockets', value: 'sockets' },
+          { name: 'Workers', value: 'workers' },
+        ],
+        validate: (answer) => {
+          if (answer.length < 1) {
+            return 'Debes seleccionar al menos una opción.'
+          }
+          return true
         },
-      ])
-      type = typeProyect
+      },
+    ])
+    type = typeProject
+  }
+  const bootFlag = getFlag('boot') || getFlag('b')
+  if (typeof bootFlag === 'string') {
+    if (['manual', 'auto'].includes(bootFlag)) {
+      boot = bootFlag
     }
-    writeConfig = true
   }
   if (!boot) {
-    let ask = false
-    const bootFlag = getFlag('boot') || getFlag('b')
-    if (bootFlag && typeof bootFlag === 'string') {
-      if (['manual', 'auto'].includes(bootFlag)) {
-        boot = bootFlag
-      } else {
-        ask = true
-      }
-    } else {
-      ask = true
-    }
-    if (ask) {
-      const { bootProyect } = await prompt([
-        {
-          type: 'list',
-          name: 'bootProyect',
-          message: 'Selecciona un modo de arranque:',
-          choices: [
-            { name: 'Automático', value: 'auto' },
-            { name: 'Manual', value: 'manual' }
-          ],
-        },
-      ])
-      boot = bootProyect
-    }
-    writeConfig = true
+    const { bootProject } = await prompt([
+      {
+        type: 'list',
+        name: 'bootProject',
+        message: 'Selecciona un modo de inicio:',
+        choices: [
+          { name: 'Automático', value: 'auto' },
+          { name: 'Manual', value: 'manual' }
+        ],
+      },
+    ])
+    boot = bootProject
+  }
+  const omitAutoFlag = getFlag('omit-auto') || getFlag('oa')
+  if (typeof omitAutoFlag === 'boolean') {
+    omitAuto = omitAutoFlag
   }
   if (omitAuto === undefined) {
-    const omitAutoFlag = getFlag('omit-auto') || getFlag('oa')
-    if (typeof omitAuto === 'boolean') {
-      omitAuto = omitAutoFlag
-    } else {
-      const { omitAutoProyect } = await prompt([
-        {
-          type: 'list',
-          name: 'omitAutoProyect',
-          message: 'Omitir la automatización del Framework:',
-          choices: [
-            { name: 'No', value: false },
-            { name: 'Sí', value: true }
-          ],
-        },
-      ])
-      omitAuto = omitAutoProyect
-    }
-    writeConfig = true
+    const { omitAutoProject } = await prompt([
+      {
+        type: 'list',
+        name: 'omitAutoProject',
+        message: 'Omitir la automatización del Framework:',
+        choices: [
+          { name: 'No', value: false },
+          { name: 'Sí', value: true }
+        ],
+      },
+    ])
+    omitAuto = omitAutoProject
   }
-  const config = { type, boot, resources, loader, type, omitAuto }
-  if (writeConfig) {
-    package.pxio = { ...config }
-    fs.writeFileSync(process.env.npm_package_json, JSON.stringify(package, null, '\t'))
+  const outDirFlag = getFlag('out-dir') || getFlag('od')
+  if (typeof outDirFlag === 'string') {
+    outDir = path.resolve(process.cwd(), outDirFlag)
   }
-  if (typeof pxio.outDir === 'string') {
-    config['outDir'] = path.resolve(process.cwd(), pxio.outDir)
-  } else {
-    config['outDir'] = path.resolve(process.cwd(), isDebugging ? '.debugger' : 'dist')
+  if (outDir === undefined) {
+    outDir = path.resolve(process.cwd(), isDebugging ? '.debugger' : 'dist')
   }
+  const config = { type, boot, resources, loader, type, omitAuto, outDir }
   return config
 }
