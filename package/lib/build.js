@@ -3,9 +3,9 @@ const path = require('node:path')
 const { buildSync } = require('esbuild')
 const generate = require('./generate')
 
-module.exports = ({ type, boot, resources = [], loader, outDir, omitAuto }, log) => {
+module.exports = ({ type, boot, resources = [], loader, outDir, omitAuto, singleProcess }, log) => {
   const { PWD = process.cwd() } = process.env
-  const { modules, plugins } = generate({ type, boot, isRelease: true, outDir, omitAuto })
+  const { modules, plugins } = generate({ type, boot, isRelease: true, outDir, omitAuto, singleProcess })
   for (const { name, input, inject, outfile, external, alias, define } of modules) {
     log(`Compilando: ${name}`)
     buildSync({

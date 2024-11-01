@@ -3,7 +3,7 @@ const { fork } = require('node:child_process')
 const { context } = require('esbuild')
 const generate = require('./generate')
 
-module.exports = async ({ type, boot, loader, outDir, omitAuto }, log, args) => {
+module.exports = async ({ type, boot, loader, outDir, omitAuto, singleProcess }, log, args) => {
   const { PWD = process.cwd() } = process.env
   let isRunning = false
   let childProcess = null
@@ -14,7 +14,7 @@ module.exports = async ({ type, boot, loader, outDir, omitAuto }, log, args) => 
     childProcess.on('error', log)
   }
   const { modules, plugins } = generate(
-    { type, boot, isRelease: false, outDir, omitAuto },
+    { type, boot, isRelease: false, outDir, omitAuto, singleProcess },
     result => {
       if (isRunning && !omitAuto) {
         if (!childProcess?.killed) {

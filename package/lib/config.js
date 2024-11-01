@@ -36,7 +36,8 @@ module.exports = async (isDebugging = false) => {
     resources = [],
     loader = {},
     type = [],
-    outDir
+    outDir,
+    singleProcess
   } = pxio
   const typeFlag = getFlag('type') || getFlag('t')
   if (typeof typeFlag === 'string') {
@@ -104,6 +105,10 @@ module.exports = async (isDebugging = false) => {
     ])
     omitAuto = omitAutoProject
   }
+  const singleProcessFlag = getFlag('single-process') || getFlag('sp')
+  if (typeof singleProcessFlag === 'boolean') {
+    singleProcess = singleProcessFlag
+  }
   const outDirFlag = getFlag('out-dir') || getFlag('od')
   if (typeof outDirFlag === 'string') {
     outDir = path.resolve(process.cwd(), outDirFlag)
@@ -111,6 +116,6 @@ module.exports = async (isDebugging = false) => {
   if (outDir === undefined) {
     outDir = path.resolve(process.cwd(), isDebugging ? '.debugger' : 'dist')
   }
-  const config = { type, boot, resources, loader, type, omitAuto, outDir }
+  const config = { type, boot, resources, loader, type, omitAuto, outDir, singleProcess }
   return config
 }

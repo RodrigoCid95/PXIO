@@ -1,7 +1,7 @@
 const fs = require('node:fs')
 const path = require('node:path')
 
-module.exports = ({ type, boot, isRelease, outDir, omitAuto }, watch = undefined) => {
+module.exports = ({ type, boot, isRelease, outDir, omitAuto, singleProcess }, watch = undefined) => {
   const { PWD = process.cwd() } = process.env
   const injectables = path.resolve(__dirname, '..', 'injects')
   const mods = path.resolve(__dirname, '..', 'mods')
@@ -83,6 +83,9 @@ module.exports = ({ type, boot, isRelease, outDir, omitAuto }, watch = undefined
       outfile: path.join(dist, 'modules', 'workers.js'),
       alias: { 'workers': path.join(PWD, 'controllers', 'workers') },
       ext: ['./models'],
+      define: {
+        SINGLE_PROCESS: singleProcess ? 'true' : 'false'
+      },
     })
   }
   modules.push({
@@ -103,7 +106,8 @@ module.exports = ({ type, boot, isRelease, outDir, omitAuto }, watch = undefined
       IS_HTTP_SOCKETS: type.includes('http') && type.includes('sockets') ? 'true' : 'false',
       IS_HTTP_SOCKETS_WORKERS: type.includes('http') && type.includes('sockets') && type.includes('workers') ? 'true' : 'false',
       IS_RELEASE: isRelease ? 'true' : 'false',
-      OMIT_AUTO: omitAuto ? 'true' : 'false'
+      OMIT_AUTO: omitAuto ? 'true' : 'false',
+      SINGLE_PROCESS: singleProcess ? 'true' : 'false'
     },
     outfile: path.join(dist, 'main.js'),
     ext: ['./modules/*']

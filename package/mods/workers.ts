@@ -2,10 +2,12 @@ import EventEmitter from 'node:events'
 import * as workersControllers from 'workers'
 import getModel from './models'
 
+declare const SINGLE_PROCESS: boolean
+
 const workersEmitter = new EventEmitter()
 const responseEmitter = new EventEmitter()
 
-responseEmitter.on('emit', (id: string, data?: any) => {
+!SINGLE_PROCESS && responseEmitter.on('emit', (id: string, data?: any) => {
   if (process.send) {
     process.send({ id, data })
   }
@@ -37,20 +39,24 @@ for (const Controller of values) {
       const routeName = path.join(':')
       workersEmitter.on(routeName, async (id: Message['id'], args: Message['args']) => {
         const data = await controller[propertyKey].bind(controller)(...args)
-        responseEmitter.emit('emit', id, data)
+        !SINGLE_PROCESS && responseEmitter.emit('emit', id, data)
+        SINGLE_PROCESS && responseEmitter.emit(id, data)
       })
     }
   }
 }
 
-process.on('message', async ({ id, nameEvent, args }: Message) => {
+!SINGLE_PROCESS && process.on('message', async ({ id, nameEvent, args }: Message) => {
   const eventNames = workersEmitter.eventNames()
   if (eventNames.includes(nameEvent)) {
     workersEmitter.emit(nameEvent, id, args)
   }
 })
 
-process.stdin.resume()
+!SINGLE_PROCESS && process.stdin.resume()
+
+SINGLE_PROCESS && (module.exports.workersEmitter = workersEmitter)
+SINGLE_PROCESS && (module.exports.responseEmitter = responseEmitter)
 
 interface Message {
   id: string
