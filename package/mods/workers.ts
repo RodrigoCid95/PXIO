@@ -16,7 +16,7 @@ const responseEmitter = new EventEmitter()
 const values = Object.values<any>(workersControllers)
 for (const Controller of values) {
   if (Controller.prototype && Controller.prototype.$routes) {
-    let $namespace: string | undefined = undefined
+    let $namespace: string = Controller.name || 'global'
     if (Controller.$namespace) {
       $namespace = Controller.$namespace.join('.')
       delete Controller.$namespace
@@ -31,12 +31,7 @@ for (const Controller of values) {
     }
     const controller = new Controller()
     for (const { nameEvent, propertyKey } of $routes) {
-      const path: string[] = []
-      if ($namespace) {
-        path.push($namespace)
-      }
-      path.push(nameEvent)
-      const routeName = path.join(':')
+      const routeName = `${$namespace}:${nameEvent}`
       workersEmitter.on(routeName, async (id: Message['id'], args: Message['args']) => {
         const data = await controller[propertyKey].bind(controller)(...args)
         !SINGLE_PROCESS && responseEmitter.emit('emit', id, data)
