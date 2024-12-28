@@ -1,5 +1,5 @@
 {
-	"name": "px.io",
+	"name": "pxio",
 	"version": "0.18.27-beta",
 	"main": "lib/index.js",
 	"bin": {
