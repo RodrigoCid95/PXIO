@@ -115,6 +115,8 @@ module.exports = async (isDebugging = false) => {
   }
   if (outDir === undefined) {
     outDir = path.resolve(process.cwd(), isDebugging ? '.debugger' : 'dist')
+  } else {
+    outDir = path.resolve(process.cwd(), outDir)
   }
   const config = { type, boot, resources, loader, type, omitAuto, outDir, singleProcess }
   return config

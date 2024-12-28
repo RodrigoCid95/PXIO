@@ -81,7 +81,7 @@ module.exports = async (config, log) => {
   }
   const declarationsPath = path.join(CWD, 'declarations.d.ts')
   if (!fs.existsSync(declarationsPath)) {
-    fs.writeFileSync(declarationsPath, "import 'px.io'\nimport 'px.io/server'\nimport 'px.io/http'\nimport 'px.io/sockets'", { encoding: 'utf-8' })
+    fs.writeFileSync(declarationsPath, "import 'pxio'\nimport 'pxio/server'\nimport 'pxio/http'\nimport 'pxio/sockets'", { encoding: 'utf-8' })
   }
   const tsConfigPath = path.join(CWD, 'tsconfig.json')
   if (!fs.existsSync(tsConfigPath)) {
@@ -146,6 +146,14 @@ module.exports = async (config, log) => {
     scripts.build = 'pxio build'
   }
   package.scripts = scripts
+  if (config.outDir) {
+    const lengthPWDSegments = (process.env.PWD || process.cwd())
+      .split(path.sep)
+      .length
+    const outDirSegments = config.outDir.split(path.sep)
+    outDirSegments.splice(0, lengthPWDSegments)
+    config.outDir = path.join(...outDirSegments)
+  }
   package.pxio = config
   const dependenciesList = Object.keys(dependencies)
   const devDependenciesList = Object.keys(devDependencies)
@@ -166,9 +174,9 @@ module.exports = async (config, log) => {
     log('Instalando @types/node ...')
     install('@types/node', true)
   }
-  if (!devDependenciesList.includes('px.io')) {
-    log('Instalando px.io ...')
-    install('px.io', true)
+  if (!devDependenciesList.includes('pxio')) {
+    log('Instalando pxio ...')
+    install('pxio', true)
   }
   log('PXIO Framework!\n')
 }
