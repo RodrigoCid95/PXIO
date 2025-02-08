@@ -118,7 +118,7 @@ module.exports = ({ type, boot, isRelease, outDir, omitAuto, singleProcess }, wa
       fs.writeFileSync(input, '', 'utf-8')
     }
   }
-  const { dependencies = { 'px.io': null }, devDependencies = { 'px.io': null } } = require(process.env.npm_package_json)
+  const { dependencies = { 'pxio': null }, devDependencies = { 'pxio': null } } = require(process.env.npm_package_json)
   const externalDeps = [...Object.keys(dependencies), ...Object.keys(devDependencies)]
   let plugins = []
   let pluginsPath = path.join(PWD, 'plugins.js')
