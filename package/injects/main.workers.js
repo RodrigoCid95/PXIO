@@ -1,10 +1,10 @@
 function initWorkerServer(isGlobal) {
+  const crypto = require('node:crypto')
   let emit
   !SINGLE_PROCESS && (() => {
     const { fork } = require('node:child_process')
     const path = require('node:path')
     const EventEmitter = require('node:events')
-    const crypto = require('node:crypto')
     const emitter = new EventEmitter()
     const workersPath = path.join(__dirname, 'modules', 'workers.js')
     const child = fork(workersPath, process.argv)
