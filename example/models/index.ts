@@ -1,7 +1,7 @@
 import type { Database } from 'sqlite3'
 
 export class MiModelo {
-  @Library('database') private database: Database
+  @Library('Database') private database: Database
   public createUser(newUser: User.New): void {
     this.database.run(`INSERT INTO "users" (uuid, user_name, full_name, hash_password) VALUES (?, ?, ?, ?)`, Object.values(newUser))
   }
