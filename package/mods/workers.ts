@@ -45,6 +45,9 @@ for (const Controller of values) {
   const eventNames = workersEmitter.eventNames()
   if (eventNames.includes(nameEvent)) {
     workersEmitter.emit(nameEvent, id, args)
+  } else {
+    !SINGLE_PROCESS && responseEmitter.emit('emit', id, null)
+    SINGLE_PROCESS && responseEmitter.emit(id, null)
   }
 })
 
