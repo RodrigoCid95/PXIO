@@ -4,10 +4,15 @@ const instances = {}
 const keys: any[] = []
 const values = Object
   .entries<any>(libsModule)
-  .filter(([_, lib]) => typeof lib === 'function')
   .map(([key, lib]) => {
     keys.push(key)
-    return lib.prototype ? new lib() : lib()
+    if (typeof lib === 'function') {
+      if (lib.prototype) {
+        return new lib()
+      }
+      return lib()
+    }
+    return lib
   })
 Promise
   .all(values)
