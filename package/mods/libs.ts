@@ -1,11 +1,14 @@
 import * as libsModule from 'libs'
 
 const instances = {}
-const keys = Object.keys(libsModule)
+const keys: any[] = []
 const values = Object
-  .values<any>(libsModule)
-  .filter(lib => typeof lib === 'function')
-  .map(lib => lib())
+  .entries<any>(libsModule)
+  .filter(([_, lib]) => typeof lib === 'function')
+  .map(([key, lib]) => {
+    keys.push(key)
+    return lib.prototype ? new lib() : lib()
+  })
 Promise
   .all(values)
   .then(libs => {
