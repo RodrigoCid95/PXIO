@@ -13,12 +13,12 @@ function initSocketsServer({ http, onError = console.error } = {}) {
   } else {
     io = SocketIO(port, pxioSocketsConfig)
   }
+  if (events.onBeforeConfig) {
+    events.onBeforeConfig(io)
+  }
   const loadRouters = require('./modules/sockets').default
   const namespaces = loadRouters(io)
   for (const { value: namespace, onConnectCallbacks, routes, onDisconnectCallbacks } of namespaces) {
-    if (events.onBeforeConfig) {
-      events.onBeforeConfig(namespace)
-    }
     namespace.on("connection", async (socket) => {
       if (events.onConnect) {
         await events.onConnect({ socket, io })
