@@ -29,9 +29,9 @@ const loadNamespaces = (io: Server) => {
     if (Controller.prototype) {
       const namespace: any = {
         value: io,
-        onConnectCallbacks: [],
+        onConnectCallbacks: undefined,
         routes: [],
-        onDisconnectCallbacks: []
+        onDisconnectCallbacks: undefined
       }
       if (Controller.$namespace) {
         namespace.value = io.of(`/${Controller.$namespace.join('/')}`)

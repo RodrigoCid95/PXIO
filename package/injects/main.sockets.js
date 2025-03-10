@@ -23,14 +23,16 @@ function initSocketsServer({ http, onError = console.error } = {}) {
       if (events.onConnect) {
         await events.onConnect({ socket, namespace, io })
       }
-      try {
-        const result = await onConnectCallbacks.run({ data: null, socket })
-        if (result === false) {
+      if (onConnectCallbacks) {
+        try {
+          const result = await onConnectCallbacks.run({ data: null, socket })
+          if (result === false) {
+            return
+          }
+        } catch (error) {
+          console.error(error)
           return
         }
-      } catch (error) {
-        console.error(error)
-        return
       }
       for (const { nameEvent, pipeline } of routes) {
         socket.on(nameEvent, async (...args) => {
@@ -64,7 +66,9 @@ function initSocketsServer({ http, onError = console.error } = {}) {
         })
       }
       socket.on("disconnect", async reason => {
-        await onDisconnectCallbacks.run({ reason, socket, io })
+        if (onDisconnectCallbacks) {
+          await onDisconnectCallbacks.run({ reason, socket, io })
+        }
         if (events.onDisconnect) {
           events.onDisconnect(reason, io, socket)
         }
