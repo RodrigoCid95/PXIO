@@ -10,21 +10,21 @@ function initWorkerServer(isGlobal) {
     const child = fork(workersPath, process.argv)
     child.on('message', ({ id, data }) => emitter.emit(id, data))
     child.on('error', error => console.log(error))
-    emit = (nameEvent, ...args) => {
+    emit = (nameEvent, data) => {
       return new Promise(resolve => {
         const id = crypto.randomUUID()
         emitter.once(id, data => resolve(data))
-        child.send({ id, nameEvent, args })
+        child.send({ id, nameEvent, data })
       })
     }
   })()
   SINGLE_PROCESS && (() => {
     const { workersEmitter, responseEmitter } = require('./modules/workers.js')
-    emit = (nameEvent, ...args) => {
+    emit = (nameEvent, data) => {
       return new Promise(resolve => {
         const id = crypto.randomUUID()
         responseEmitter.once(id, data => resolve(data))
-        workersEmitter.emit(nameEvent, id, args)
+        workersEmitter.emit(nameEvent, id, data)
       })
     }
   })()

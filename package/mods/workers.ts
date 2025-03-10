@@ -13,6 +13,25 @@ const responseEmitter = new EventEmitter()
   }
 })
 
+class Pipeline {
+  #stack: any[] = []
+
+  use = (...middlewares: any[]) => this.#stack = this.#stack.concat(middlewares)
+
+  async run(...args: any[]) {
+    const stack = [...this.#stack]
+    let result = undefined
+    while (stack.length !== 0) {
+      const layer = stack.shift()
+      result = await layer(...args)
+      if (result !== undefined) {
+        break
+      }
+    }
+    return result
+  }
+}
+
 const values = Object.values<any>(workersControllers)
 for (const Controller of values) {
   if (Controller.prototype && Controller.prototype.$routes) {
@@ -21,30 +40,50 @@ for (const Controller of values) {
       $namespace = Controller.$namespace.join('.')
       delete Controller.$namespace
     }
-    const { $routes } = Controller.prototype
-    delete Controller.prototype.$routes
-    if (Object.prototype.hasOwnProperty.call(Controller.prototype, '$models')) {
+    let beforeMiddlewares: any[] = []
+    if (Controller.$beforeMiddlewares) {
+      beforeMiddlewares = Controller.$beforeMiddlewares
+      delete Controller.$beforeMiddlewares
+    }
+    let afterMiddlewares: any[] = []
+    if (Controller.$afterMiddlewares) {
+      afterMiddlewares = Controller.$afterMiddlewares
+      delete Controller.$afterMiddlewares
+    }
+    let routes = []
+    if (Controller.prototype.$routes) {
+      routes = Controller.prototype.$routes
+      delete Controller.prototype.$routes
+    }
+    if (Controller.prototype.$models) {
       for (const [propertyKey, name] of Object.entries<string>(Controller.prototype.$models)) {
         Object.defineProperty(Controller.prototype, propertyKey, { value: getModel(name), writable: false })
       }
       delete Controller.prototype.$models
     }
     const controller = new Controller()
-    for (const { nameEvent, propertyKey } of $routes) {
+    for (const { nameEvent, propertyKey, middlewares = { before: [], after: [] } } of routes) {
       const routeName = `${$namespace}:${nameEvent}`
-      workersEmitter.on(routeName, async (id: Message['id'], args: Message['args']) => {
-        const data = await controller[propertyKey].bind(controller)(...args)
-        !SINGLE_PROCESS && responseEmitter.emit('emit', id, data)
-        SINGLE_PROCESS && responseEmitter.emit(id, data)
+      const callback = controller[propertyKey].bind(controller)
+      const pipeline = new Pipeline()
+      pipeline.use(...beforeMiddlewares)
+      pipeline.use(...middlewares.before)
+      pipeline.use(callback)
+      pipeline.use(...middlewares.after)
+      pipeline.use(...afterMiddlewares)
+      workersEmitter.on(routeName, async (id: Message['id'], data: Message['data']) => {
+        const response = await pipeline.run({ eventName: routeName, data })
+        !SINGLE_PROCESS && responseEmitter.emit('emit', id, response)
+        SINGLE_PROCESS && responseEmitter.emit(id, response)
       })
     }
   }
 }
 
-!SINGLE_PROCESS && process.on('message', async ({ id, nameEvent, args }: Message) => {
+!SINGLE_PROCESS && process.on('message', async ({ id, nameEvent, data }: Message) => {
   const eventNames = workersEmitter.eventNames()
   if (eventNames.includes(nameEvent)) {
-    workersEmitter.emit(nameEvent, id, args)
+    workersEmitter.emit(nameEvent, id, data)
   } else {
     !SINGLE_PROCESS && responseEmitter.emit('emit', id, null)
     SINGLE_PROCESS && responseEmitter.emit(id, null)
@@ -59,5 +98,5 @@ SINGLE_PROCESS && (module.exports.responseEmitter = responseEmitter)
 interface Message {
   id: string
   nameEvent: string
-  args: any[]
+  data: any
 }

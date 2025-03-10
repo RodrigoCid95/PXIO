@@ -29,21 +29,22 @@ for (const controllerName of controllersName) {
       delete Controller.$namespace
     }
     let beforeMiddlewares: any[] = []
-    if (Controller.$beforeMiddlewares) {
-      beforeMiddlewares = Controller.$beforeMiddlewares
+    if (Controller.prototype.$beforeMiddlewares) {
+      beforeMiddlewares = Controller.prototype.$beforeMiddlewares
+      delete Controller.prototype.$beforeMiddlewares
     }
     let afterMiddlewares: any[] = []
-    if (Controller.$afterMiddlewares) {
-      afterMiddlewares = Controller.$afterMiddlewares
+    if (Controller.prototype.$afterMiddlewares) {
+      afterMiddlewares = Controller.prototype.$afterMiddlewares
+      delete Controller.prototype.$afterMiddlewares
     }
     let $routes: Routes = {}
     if (Controller.prototype.$routes) {
       $routes = Controller.prototype.$routes
       delete Controller.prototype.$routes
     }
-    if (Object.prototype.hasOwnProperty.call(Controller.prototype, '$models')) {
-      const { $models } = Controller.prototype
-      for (const [propertyKey, name] of Object.entries<string>($models)) {
+    if (Controller.prototype.$models) {
+      for (const [propertyKey, name] of Object.entries<string>(Controller.prototype.$models)) {
         Object.defineProperty(Controller.prototype, propertyKey, { value: getModel(name), writable: false })
       }
       delete Controller.prototype.$models

@@ -63,6 +63,7 @@ module.exports = ({ type, boot, isRelease, outDir, omitAuto, singleProcess }, wa
       input: path.join(mods, 'sockets.ts'),
       inject: [
         path.join(injectables, 'flags.js'),
+        path.join(injectables, 'middlewares.js'),
         path.join(injectables, 'controllers.js'),
         path.join(injectables, 'controllers.sockets.js')
       ],
@@ -77,6 +78,7 @@ module.exports = ({ type, boot, isRelease, outDir, omitAuto, singleProcess }, wa
       input: path.join(mods, 'workers.ts'),
       inject: [
         path.join(injectables, 'flags.js'),
+        path.join(injectables, 'middlewares.js'),
         path.join(injectables, 'controllers.js'),
         path.join(injectables, 'controllers.workers.js')
       ],

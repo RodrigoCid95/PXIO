@@ -81,7 +81,7 @@ module.exports = async (config, log) => {
   }
   const declarationsPath = path.join(CWD, 'declarations.d.ts')
   if (!fs.existsSync(declarationsPath)) {
-    fs.writeFileSync(declarationsPath, "import 'pxio'\nimport 'pxio/server'\nimport 'pxio/http'\nimport 'pxio/sockets'", { encoding: 'utf-8' })
+    fs.writeFileSync(declarationsPath, "import 'pxio'\nimport 'pxio/server'\nimport 'pxio/http'\nimport 'pxio/sockets'\nimport 'pxio/workers'", { encoding: 'utf-8' })
   }
   const tsConfigPath = path.join(CWD, 'tsconfig.json')
   if (!fs.existsSync(tsConfigPath)) {

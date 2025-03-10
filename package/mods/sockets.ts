@@ -2,46 +2,77 @@ import type { Server } from 'socket.io'
 import * as socketsControllers from 'sockets'
 import getModel from './models'
 
+class Pipeline {
+  #stack: any[] = []
+
+  use = (...middlewares: any[]) => this.#stack = this.#stack.concat(middlewares)
+
+  async run(...args: any[]) {
+    const stack = [...this.#stack]
+    let result = undefined
+    while (stack.length !== 0) {
+      const layer = stack.shift()
+      result = await layer(...args)
+      if (result !== undefined) {
+        break
+      }
+    }
+    return result
+  }
+}
+
 const loadNamespaces = (io: Server) => {
   const indices: string[] = Object.keys(socketsControllers)
   const namespaces: any = []
   for (const controllerName of indices) {
     const Controller = socketsControllers[controllerName]
     if (Controller.prototype) {
-      let $namespace: string | undefined = undefined
-      if (Controller.$namespace) {
-        $namespace = `/${Controller.$namespace.join('/')}`
-        delete Controller.$namespace
-      }
       const namespace: any = {
-        value: $namespace === undefined ? io : io.of($namespace),
+        value: io,
         onConnectCallbacks: [],
         routes: [],
         onDisconnectCallbacks: []
+      }
+      if (Controller.$namespace) {
+        namespace.value = io.of(`/${Controller.$namespace.join('/')}`)
+        delete Controller.$namespace
+      }
+      let beforeMiddlewares: any[] = []
+      if (Controller.$beforeMiddlewares) {
+        beforeMiddlewares = Controller.$beforeMiddlewares
+        delete Controller.$beforeMiddlewares
+      }
+      let afterMiddlewares: any[] = []
+      if (Controller.$afterMiddlewares) {
+        afterMiddlewares = Controller.$afterMiddlewares
+        delete Controller.$afterMiddlewares
       }
       let routes = []
       if (Controller.prototype.$routes) {
         routes = Controller.prototype.$routes
         delete Controller.prototype.$routes
       }
-      if (Object.prototype.hasOwnProperty.call(Controller.prototype, '$models')) {
-        const { $models } = Controller.prototype
-        for (const [propertyKey, name] of Object.entries<string>($models)) {
+      if (Controller.prototype.$models) {
+        for (const [propertyKey, name] of Object.entries<string>(Controller.prototype.$models)) {
           Object.defineProperty(Controller.prototype, propertyKey, { value: getModel(name), writable: false })
         }
         delete Controller.prototype.$models
       }
-      const controller = new Controller(namespace.value)
-      for (const { nameEvent, propertyKey } of routes) {
+      const controller = new Controller(namespace.value, io)
+      for (const { nameEvent, propertyKey, middlewares = { before: [], after: [] } } of routes) {
+        const callback = controller[propertyKey].bind(controller)
+        const pipeline = new Pipeline()
+        pipeline.use(...beforeMiddlewares)
+        pipeline.use(...middlewares.before)
+        pipeline.use(callback)
+        pipeline.use(...middlewares.after)
+        pipeline.use(...afterMiddlewares)
         if (nameEvent === 'connect') {
-          namespace.onConnectCallbacks.push(controller[propertyKey].bind(controller))
+          namespace.onConnectCallbacks = pipeline
         } else if (nameEvent === 'disconnect') {
-          namespace.onDisconnectCallbacks.push(controller[propertyKey].bind(controller))
+          namespace.onDisconnectCallbacks = pipeline
         } else {
-          namespace.routes.push({
-            nameEvent,
-            callback: controller[propertyKey].bind(controller)
-          })
+          namespace.routes.push({ nameEvent, pipeline })
         }
       }
       namespaces.push(namespace)

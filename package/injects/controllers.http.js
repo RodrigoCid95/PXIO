@@ -1,12 +1,62 @@
-function Middlewares(mws = {}) {
-  return function (constructor) {
-    if (mws.before) {
-      constructor.$beforeMiddlewares = mws.before
+const findRoute = (target, propertyKey) => {
+  for (const [path, route] of Object.entries(target.$routes)) {
+    for (const [method, value] of Object.entries(route)) {
+      if (propertyKey === value.propertyKey) {
+        return { path, method }
+      }
     }
-    if (mws.after) {
-      constructor.$afterMiddlewares = mws.after
+  }
+}
+
+function After(mws = []) {
+  return (target, propertyKey, descriptor) => {
+    const route = findRoute(target, propertyKey)
+    if (route) {
+      for (let mw of mws) {
+        if (typeof mw === 'string') {
+          if (!target.hasOwnProperty(mw)) {
+            console.error(`\n${target.name}: El middleware ${mw} no está declarado!`)
+            if (descriptor) {
+              return descriptor
+            }
+          }
+          mw = target[mw]
+        }
+        const { path, method } = findRoute(target, propertyKey)
+        target.$routes[path][method].middlewares.after.push(mw)
+      }
+      if (descriptor) {
+        return descriptor
+      }
+    } else {
+      console.error(`No existe un path definido para el método "${propertyKey}" de la clase "${target.constructor.name}".\nIntenta definir primero sus middlewares y después el path con los decoradores @All, @Get, @Post, @Put o @Delete.`)
     }
-    return constructor
+  }
+}
+
+function Before(mws = []) {
+  return (target, propertyKey, descriptor) => {
+    const route = findRoute(target, propertyKey)
+    if (route) {
+      for (let mw of mws) {
+        if (typeof mw === 'string') {
+          if (!target.hasOwnProperty(mw)) {
+            console.error(`\n${target.name}: El middleware ${mw} no está declarado!`)
+            if (descriptor) {
+              return descriptor
+            }
+          }
+          mw = target[mw]
+        }
+        const { path, method } = findRoute(target, propertyKey)
+        target.$routes[path][method].middlewares.before.push(mw)
+      }
+      if (descriptor) {
+        return descriptor
+      }
+    } else {
+      console.error(`No existe un path definido para el método "${propertyKey}" de la clase "${target.constructor.name}".\nIntenta definir primero sus middlewares y después el path con los decoradores @All, @Get, @Post, @Put o @Delete.`)
+    }
   }
 }
 
@@ -29,68 +79,6 @@ const registerRoute = ({
     middlewares: {
       after: [],
       before: []
-    }
-  }
-}
-
-const findRoute = (target, propertyKey) => {
-  for (const [path, route] of Object.entries(target.$routes)) {
-    for (const [method, value] of Object.entries(route)) {
-      if (propertyKey === value.propertyKey) {
-        return { path, method }
-      }
-    }
-  }
-}
-
-function After(mws) {
-  return (target, propertyKey, descriptor) => {
-    const route = findRoute(target, propertyKey)
-    if (route) {
-      for (let mw of mws) {
-        if (typeof mw === 'string') {
-          if (!target.hasOwnProperty(mw)) {
-            console.error(`\n${target.name}: El middleware ${mw} no está declarado!`)
-            if (descriptor) {
-              return descriptor
-            }
-          }
-          mw = target[mw]
-        }
-        const { path, method } = findRoute(target, propertyKey)
-        target.$routes[path][method].middlewares.after.push(mw)
-      }
-      if (descriptor) {
-        return descriptor
-      }
-    } else {
-      console.error(`No existe un path definido para el método ${propertyKey} de la clase ${target.constructor.name}.\nIntenta definir primero sus middlewares y después el path con los decoradores @All, @Get, @Post, @Put o @Delete.`)
-    }
-  }
-}
-
-function Before(mws) {
-  return (target, propertyKey, descriptor) => {
-    const route = findRoute(target, propertyKey)
-    if (route) {
-      for (let mw of mws) {
-        if (typeof mw === 'string') {
-          if (!target.hasOwnProperty(mw)) {
-            console.error(`\n${target.name}: El middleware ${mw} no está declarado!`)
-            if (descriptor) {
-              return descriptor
-            }
-          }
-          mw = target[mw]
-        }
-        const { path, method } = findRoute(target, propertyKey)
-        target.$routes[path][method].middlewares.before.push(mw)
-      }
-      if (descriptor) {
-        return descriptor
-      }
-    } else {
-      console.error(`No existe un path definido para el método ${propertyKey} de la clase ${target.constructor.name}.\nIntenta definir primero sus middlewares y después el path con los decoradores @All, @Get, @Post, @Put o @Delete.`)
     }
   }
 }
@@ -182,7 +170,6 @@ function View(path, args = {}) {
 }
 
 export {
-  Middlewares,
   After,
   Before,
   Get,

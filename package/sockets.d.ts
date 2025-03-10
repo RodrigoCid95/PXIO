@@ -53,8 +53,20 @@ declare global {
         }) => void | Promise<void>
       }
     }
+    type Middleware = <D = any>({ socket }: PXIOSockets.EventArgs<D>) => void
+    interface Middlewares {
+      before?: PXIOSockets.Middleware[]
+      after?: PXIOSockets.Middleware[]
+    }
+    interface EventArgs<T = any> {
+      data: T
+      socket: Socket
+    }
   }
+  function Middlewares(mws?: PXIOSockets.Middlewares): <T extends new (...args: any[]) => {}>(constructor: T) => void
   function On(nameEvent: 'connect' | 'disconnect' | string): (target: Object, propertyKey: string) => void
+  function After(middleware: Array<string | PXIOSockets.Middleware>): (target: Object, propertyKey: string) => void
+  function Before(middleware: Array<string | PXIOSockets.Middleware>): (target: Object, propertyKey: string) => void
   /**
    * Web socket.
    */
