@@ -1,20 +1,27 @@
+import { verifySession } from "./middlewares"
+
 @Namespace('chat')
+@Middlewares({ before: [verifySession] })
 export class IndexController {
   @Model('MiModelo') model: Models<'MiModelo'>
-  constructor(private io: IO) { }
+
+  constructor(private namespace: IO) { }
+
   @On('connect')
-  public join(socket: Socket): void {
-    const { user_name, full_name } = (socket.handshake as any).session.user
+  public join({ socket }: PXIOSockets.EventArgs): void {
+    const { user_name, full_name } = socket.request.session.user
     socket.broadcast.emit('join', { user_name, full_name })
   }
+
   @On('message')
-  public message(message: string, socket: Socket): void {
-    const { user_name } = (socket.handshake as any).session.user
-    this.io.emit('message', { user_name, message })
+  public message({ data: message, socket }: PXIOSockets.EventArgs<string>): void {
+    const { user_name } = socket.request.session.user
+    this.namespace.emit('message', { user_name, message })
   }
+
   @On('disconnect')
-  public leave(_: string, socket: Socket): void {
-    const { user_name, full_name } = (socket.handshake as any).session.user
+  public leave({ socket }: PXIOSockets.EventArgs): void {
+    const { user_name, full_name } = socket.request.session.user
     socket.broadcast.emit('leave', { user_name, full_name })
   }
 }

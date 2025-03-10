@@ -41,9 +41,7 @@ export const WS: PXIOSockets.Config = {
   serveClient: true,
   events: {
     onBeforeConfig(io) {
-      io.use(sharedSession(sessionMiddleware, {
-        autoSave: true
-      }))
+      io.engine.use(sessionMiddleware)
     }
   }
 }
