@@ -29,14 +29,14 @@ for (const controllerName of controllersName) {
       delete Controller.$namespace
     }
     let beforeMiddlewares: any[] = []
-    if (Controller.prototype.$beforeMiddlewares) {
-      beforeMiddlewares = Controller.prototype.$beforeMiddlewares
-      delete Controller.prototype.$beforeMiddlewares
+    if (Controller.$beforeMiddlewares) {
+      beforeMiddlewares = Controller.$beforeMiddlewares
+      delete Controller.$beforeMiddlewares
     }
     let afterMiddlewares: any[] = []
-    if (Controller.prototype.$afterMiddlewares) {
-      afterMiddlewares = Controller.prototype.$afterMiddlewares
-      delete Controller.prototype.$afterMiddlewares
+    if (Controller.$afterMiddlewares) {
+      afterMiddlewares = Controller.$afterMiddlewares
+      delete Controller.$afterMiddlewares
     }
     let $routes: Routes = {}
     if (Controller.prototype.$routes) {
