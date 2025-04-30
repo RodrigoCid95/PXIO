@@ -25,7 +25,7 @@ function initSocketsServer({ http, onError = console.error } = {}) {
       }
       if (onConnectCallbacks) {
         try {
-          const result = await onConnectCallbacks.run({ data: null, socket })
+          const result = await onConnectCallbacks.run({ data: null, socket, nameEvent: 'connect' })
           if (result === false) {
             return
           }
@@ -43,11 +43,11 @@ function initSocketsServer({ http, onError = console.error } = {}) {
           let data = args.length > 1 ? args : args[0]
           try {
             if (events.onANewRequest) {
-              data = await events.onANewRequest({ data, socket })
+              data = await events.onANewRequest({ data, socket, nameEvent })
             }
-            data = await pipeline.run({ data, socket })
+            data = await pipeline.run({ data, socket, nameEvent })
             if (events.onBeforeToResponse && reply) {
-              data = await events.onBeforeToResponse({ data, socket })
+              data = await events.onBeforeToResponse({ data, socket, nameEvent })
             }
             if (reply) {
               reply({ data })
@@ -55,7 +55,7 @@ function initSocketsServer({ http, onError = console.error } = {}) {
           } catch ({ message, stack }) {
             let error = { error: { message, stack } }
             if (events.onBeforeToResponse && reply) {
-              error = await events.onBeforeToResponse({ error, socket })
+              error = await events.onBeforeToResponse({ error, socket, nameEvent })
             }
             onError(message)
             onError(stack)
@@ -67,7 +67,7 @@ function initSocketsServer({ http, onError = console.error } = {}) {
       }
       socket.on("disconnect", async reason => {
         if (onDisconnectCallbacks) {
-          await onDisconnectCallbacks.run({ reason, socket, io })
+          await onDisconnectCallbacks.run({ data: reason, socket, nameEvent: 'disconnect' })
         }
         if (events.onDisconnect) {
           events.onDisconnect(reason, io, socket)

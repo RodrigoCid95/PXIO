@@ -7,12 +7,12 @@ class Pipeline {
 
   use = (...middlewares: any[]) => this.#stack = this.#stack.concat(middlewares)
 
-  async run(...args: any[]) {
+  async run(args: any) {
     const stack = [...this.#stack]
     let result = undefined
     while (stack.length !== 0) {
       const layer = stack.shift()
-      result = await layer(...args)
+      result = await layer(args)
       if (result !== undefined) {
         break
       }

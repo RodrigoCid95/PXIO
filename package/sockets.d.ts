@@ -59,6 +59,7 @@ declare global {
       after?: PXIOSockets.Middleware[]
     }
     interface EventArgs<T = any> {
+      eventName: string
       data: T
       socket: Socket
     }
