@@ -70,6 +70,7 @@ const registerRoute = ({
   if (!target.hasOwnProperty('$routes')) {
     target.$routes = {}
   }
+  path = path || `/${propertyKey}`
   if (!target.$routes.hasOwnProperty(path)) {
     target.$routes[path] = {}
   }

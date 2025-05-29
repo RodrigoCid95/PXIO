@@ -105,14 +105,14 @@ declare global {
     middlewares: PXIOHTTP.Middleware[]
   }
   type VIEWS = VIEW[]
-  function View(path: string, options?: object): (target: Object, propertyKey: string) => void
+  function View(path?: string, options?: object): (target: Object, propertyKey: string) => void
   function After(middleware: Array<string | PXIOHTTP.Middleware | PXIOHTTP.ErrorMiddleware>): (target: Object, propertyKey: string) => void
   function Before(middleware: Array<string | PXIOHTTP.Middleware | PXIOHTTP.ErrorMiddleware>): (target: Object, propertyKey: string) => void
-  function Get(path: string): (target: Object, propertyKey: string) => void
-  function Post(path: string): (target: Object, propertyKey: string) => void
-  function Put(path: string): (target: Object, propertyKey: string) => void
-  function Delete(path: string): (target: Object, propertyKey: string) => void
-  function All(path: string): (target: Object, propertyKey: string) => void
+  function Get(path?: string): (target: Object, propertyKey: string) => void
+  function Post(path?: string): (target: Object, propertyKey: string) => void
+  function Put(path?: string): (target: Object, propertyKey: string) => void
+  function Delete(path?: string): (target: Object, propertyKey: string) => void
+  function All(path?: string): (target: Object, propertyKey: string) => void
 }
 
 export { }

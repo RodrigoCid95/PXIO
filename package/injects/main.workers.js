@@ -6,6 +6,7 @@ function initWorkerServer(isGlobal) {
     const path = require('node:path')
     const EventEmitter = require('node:events')
     const emitter = new EventEmitter()
+    emitter.setMaxListeners(0)
     const workersPath = path.join(__dirname, 'modules', 'workers.js')
     const child = fork(workersPath, process.argv)
     child.on('message', ({ id, data }) => emitter.emit(id, data))

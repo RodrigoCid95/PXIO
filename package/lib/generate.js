@@ -26,6 +26,9 @@ module.exports = ({ type, boot, isRelease, outDir, omitAuto, singleProcess }, wa
         path.join(injectables, 'flags.js'),
         path.join(injectables, 'configs.js')
       ],
+      define: {
+        IS_RELEASE: isRelease ? 'true' : 'false'
+      },
       outfile: path.join(dist, 'modules', 'libs.js'),
       alias: { 'libs': path.join(PWD, 'libraries') },
       ext: ['./configs'],
@@ -38,6 +41,9 @@ module.exports = ({ type, boot, isRelease, outDir, omitAuto, singleProcess }, wa
         path.join(injectables, 'configs.js'),
         path.join(injectables, 'models.js')
       ],
+      define: {
+        IS_RELEASE: isRelease ? 'true' : 'false'
+      },
       outfile: path.join(dist, 'modules', 'models.js'),
       alias: { 'models': path.join(PWD, 'models') },
       ext: ['./libs'],
@@ -52,6 +58,9 @@ module.exports = ({ type, boot, isRelease, outDir, omitAuto, singleProcess }, wa
         path.join(injectables, 'controllers.js'),
         path.join(injectables, 'controllers.http.js')
       ],
+      define: {
+        IS_RELEASE: isRelease ? 'true' : 'false'
+      },
       outfile: path.join(dist, 'modules', 'http.js'),
       alias: { 'http': path.join(PWD, 'controllers', 'http') },
       ext: ['./models'],
@@ -67,6 +76,9 @@ module.exports = ({ type, boot, isRelease, outDir, omitAuto, singleProcess }, wa
         path.join(injectables, 'controllers.js'),
         path.join(injectables, 'controllers.sockets.js')
       ],
+      define: {
+        IS_RELEASE: isRelease ? 'true' : 'false'
+      },
       outfile: path.join(dist, 'modules', 'sockets.js'),
       alias: { 'sockets': path.join(PWD, 'controllers', 'sockets') },
       ext: ['./models'],
@@ -86,7 +98,8 @@ module.exports = ({ type, boot, isRelease, outDir, omitAuto, singleProcess }, wa
       alias: { 'workers': path.join(PWD, 'controllers', 'workers') },
       ext: ['./models'],
       define: {
-        SINGLE_PROCESS: singleProcess ? 'true' : 'false'
+        SINGLE_PROCESS: singleProcess ? 'true' : 'false',
+        IS_RELEASE: isRelease ? 'true' : 'false'
       },
     })
   }
