@@ -54,9 +54,9 @@ declare global {
       }
     }
     type Middleware = <D = any>({ socket }: PXIOSockets.EventArgs<D>) => void
-    interface Middlewares {
-      before?: PXIOSockets.Middleware[]
-      after?: PXIOSockets.Middleware[]
+    interface Middlewares<C> {
+      before?: PXIOSockets.Middleware[] | Array<keyof C> | string[]
+      after?: PXIOSockets.Middleware[] | Array<keyof C> | string[]
     }
     interface EventArgs<T = any> {
       eventName: string
@@ -64,10 +64,10 @@ declare global {
       socket: Socket
     }
   }
-  function Middlewares(mws?: PXIOSockets.Middlewares): <T extends new (...args: any[]) => {}>(constructor: T) => void
+  function Middlewares<C = any>(mws?: PXIOSockets.Middlewares<C>): <T extends new (...args: any[]) => {}>(constructor: T) => void
   function On(nameEvent: 'connect' | 'disconnect' | string): (target: Object, propertyKey: string) => void
-  function After(middleware: Array<string | PXIOSockets.Middleware>): (target: Object, propertyKey: string) => void
-  function Before(middleware: Array<string | PXIOSockets.Middleware>): (target: Object, propertyKey: string) => void
+  function After<C = any>(middleware: Array<string | PXIOSockets.Middleware | keyof C>): (target: Object, propertyKey: string) => void
+  function Before<C = any>(middleware: Array<string | PXIOSockets.Middleware | keyof C>): (target: Object, propertyKey: string) => void
   /**
    * Web socket.
    */

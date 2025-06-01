@@ -13,16 +13,7 @@ function After(mws = []) {
     const route = findRoute(target, propertyKey)
     if (route) {
       for (let mw of mws) {
-        if (typeof mw === 'string') {
-          if (!target.hasOwnProperty(mw)) {
-            console.error(`\n${target.name}: El middleware ${mw} no está declarado!`)
-            if (descriptor) {
-              return descriptor
-            }
-          }
-          mw = target[mw]
-        }
-        const { path, method } = findRoute(target, propertyKey)
+        const { path, method } = route
         target.$routes[path][method].middlewares.after.push(mw)
       }
       if (descriptor) {
@@ -39,16 +30,7 @@ function Before(mws = []) {
     const route = findRoute(target, propertyKey)
     if (route) {
       for (let mw of mws) {
-        if (typeof mw === 'string') {
-          if (!target.hasOwnProperty(mw)) {
-            console.error(`\n${target.name}: El middleware ${mw} no está declarado!`)
-            if (descriptor) {
-              return descriptor
-            }
-          }
-          mw = target[mw]
-        }
-        const { path, method } = findRoute(target, propertyKey)
+        const { path, method } = route
         target.$routes[path][method].middlewares.before.push(mw)
       }
       if (descriptor) {

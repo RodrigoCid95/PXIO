@@ -13,13 +13,6 @@ function Before(mws = []) {
     const index = getRouteIndex(target, propertyKey)
     if (index > -1) {
       for (const mw of mws) {
-        if (typeof mw === 'string') {
-          if (!target.hasOwnProperty(mw)) {
-            console.error(`\n${target.name}: El middleware "${mw}" no está declarado`)
-            continue
-          }
-          target.$routes[index].middlewares.before.push(target[mw])
-        }
         target.$routes[index].middlewares.before.push(mw)
       }
     }
@@ -32,13 +25,6 @@ function After(mws = []) {
     const index = getRouteIndex(target, propertyKey)
     if (index > -1) {
       for (const mw of mws) {
-        if (typeof mw === 'string') {
-          if (!target.hasOwnProperty(mw)) {
-            console.error(`\n${target.name}: El middleware "${mw}" no está declarado`)
-            continue
-          }
-          target.$routes[index].middlewares.after.push(target[mw])
-        }
         target.$routes[index].middlewares.after.push(mw)
       }
     }

@@ -61,6 +61,32 @@ const loadNamespaces = (io: Server) => {
       const controller = new Controller(namespace.value, io)
       for (const { nameEvent, propertyKey, middlewares = { before: [], after: [] } } of routes) {
         const callback = controller[propertyKey].bind(controller)
+        const bMiddlewares = [...beforeMiddlewares, ...middlewares.before]
+        const aMiddlewares = [...afterMiddlewares, ...middlewares.after]
+        const before: any[] = []
+        const after: any[] = []
+        for (const bm of bMiddlewares) {
+          if (typeof bm === 'string') {
+            if (!controller[bm]) {
+              console.error(`El middleware ${bm} no está declarado dentro de ${Controller.name}`)
+              continue
+            }
+            before.push(controller[bm].bind(controller))
+          } else {
+            before.push(bm.bind(controller))
+          }
+        }
+        for (const am of aMiddlewares) {
+          if (typeof am === 'string') {
+            if (!controller[am]) {
+              console.error(`El middleware ${am} no está declarado dentro de ${Controller.name}`)
+              continue
+            }
+            after.push(controller[am].bind(controller))
+          } else {
+            after.push(am.bind(controller))
+          }
+        }
         const pipeline = new Pipeline()
         pipeline.use(...beforeMiddlewares)
         pipeline.use(...middlewares.before)

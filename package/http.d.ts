@@ -21,9 +21,9 @@ declare global {
     }
     type ErrorMiddleware = (error?: ResponseError, req?: Request, res?: PXIOHTTP.Response, next?: Next) => void
     type Middleware = (req?: PXIOHTTP.Request, res?: PXIOHTTP.Response, next?: Next) => void
-    interface Middlewares {
-      before?: PXIOHTTP.Middleware[]
-      after?: PXIOHTTP.Middleware[]
+    interface Middlewares<C = any> {
+      before?: PXIOHTTP.Middleware[] | Array<keyof C> | string[]
+      after?: PXIOHTTP.Middleware[] | Array<keyof C> | string[]
     }
     type EngineTemplates = {
       name: string
@@ -97,17 +97,16 @@ declare global {
       port?: number
     }
   }
-  function Middlewares(mws?: PXIOHTTP.Middlewares): <T extends new (...args: any[]) => {}>(constructor: T) => void
+  function Middlewares<C = any>(mws?: PXIOHTTP.Middlewares<C>): <T extends new (...args: any[]) => {}>(constructor: T) => void
   type Next = express.NextFunction
   interface VIEW {
     path: string
     view: string
-    middlewares: PXIOHTTP.Middleware[]
   }
   type VIEWS = VIEW[]
   function View(path?: string, options?: object): (target: Object, propertyKey: string) => void
-  function After(middleware: Array<string | PXIOHTTP.Middleware | PXIOHTTP.ErrorMiddleware>): (target: Object, propertyKey: string) => void
-  function Before(middleware: Array<string | PXIOHTTP.Middleware | PXIOHTTP.ErrorMiddleware>): (target: Object, propertyKey: string) => void
+  function After<C = any>(middleware: Array<string | PXIOHTTP.Middleware | PXIOHTTP.ErrorMiddleware | keyof C>): (target: Object, propertyKey: string) => void
+  function Before<C = any>(middleware: Array<string | PXIOHTTP.Middleware | PXIOHTTP.ErrorMiddleware | keyof C>): (target: Object, propertyKey: string) => void
   function Get(path?: string): (target: Object, propertyKey: string) => void
   function Post(path?: string): (target: Object, propertyKey: string) => void
   function Put(path?: string): (target: Object, propertyKey: string) => void
