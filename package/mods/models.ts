@@ -10,7 +10,7 @@ const values = Object
   .values<any>(modelsModule)
   .map(Model => {
     if (Model.prototype) {
-      const libraries = getLibraries()
+      const libraries = getLibraries(Model)
       const eLibraries = Object.entries<string>(libraries)
       if (eLibraries.length > 0) {
         for (const [propertyKey, name] of eLibraries) {
