@@ -2,6 +2,9 @@ import type { Server } from 'socket.io'
 import * as socketsControllers from 'sockets'
 import getModel from './models'
 
+declare const getModels: any
+declare const clearModels: any
+
 class Pipeline {
   #stack: any[] = []
 
@@ -52,12 +55,14 @@ const loadNamespaces = (io: Server) => {
         routes = Controller.prototype.$routes
         delete Controller.prototype.$routes
       }
-      if (Controller.prototype.$models) {
-        for (const [propertyKey, name] of Object.entries<string>(Controller.prototype.$models)) {
+      const models = getModels(Controller)
+      const eModels = Object.entries<string>(models)
+      if (eModels.length > 0) {
+        for (const [propertyKey, name] of eModels) {
           Object.defineProperty(Controller.prototype, propertyKey, { value: getModel(name), writable: false })
         }
-        delete Controller.prototype.$models
       }
+      clearModels(Controller)
       const controller = new Controller(namespace.value, io)
       for (const { nameEvent, propertyKey, middlewares = { before: [], after: [] } } of routes) {
         const callback = controller[propertyKey].bind(controller)

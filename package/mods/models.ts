@@ -1,22 +1,23 @@
 import * as modelsModule from 'models'
 import getLib from './libs'
 
+declare const getLibraries: any
+declare const clearLibraries: any
+
 const instances = {}
 const keys = Object.keys(modelsModule)
 const values = Object
   .values<any>(modelsModule)
   .map(Model => {
     if (Model.prototype) {
-      if (Object.prototype.hasOwnProperty.call(Model.prototype, '$libraries')) {
-        for (const [propertyKey, lib] of Object.entries<string>(Model.prototype.$libraries)) {
-          Object.defineProperty(Model.prototype, propertyKey, {
-            get() {
-              return getLib(lib)
-            }
-          })
+      const libraries = getLibraries()
+      const eLibraries = Object.entries<string>(libraries)
+      if (eLibraries.length > 0) {
+        for (const [propertyKey, name] of eLibraries) {
+          Object.defineProperty(Model.prototype, propertyKey, { value: getLib(name), writable: false })
         }
-        delete Model.prototype.$libraries
       }
+      clearLibraries(Model)
       return new Model()
     }
     return null

@@ -10,12 +10,29 @@ function Middlewares(mws = {}) {
   }
 }
 
-function Model(model) {
-  return (target, propertyKey) => {
-    if (!Object.prototype.hasOwnProperty.call(target, '$models')) {
-      target.$models = {}
+function getModels(ctor) {
+  if (!Object.hasOwn(ctor, '$models')) {
+    const parent = Object.getPrototypeOf(ctor)
+    const inherited = parent?.$models || {}
+    ctor.$models = { ...inherited }
+  }
+  return ctor.$models
+}
+
+function clearModels(ctor) {
+  while (ctor && ctor !== Function.prototype) {
+    if (Object.hasOwn(ctor, '$models')) {
+      delete ctor.$models
     }
-    target.$models[propertyKey] = model
+    ctor = Object.getPrototypeOf(ctor)
+  }
+}
+
+function Model(value) {
+  return function (target, key) {
+    const ctor = target.constructor
+    const models = getModels(ctor)
+    models[key] = value
   }
 }
 
@@ -29,5 +46,7 @@ function Namespace(...namespace) {
 export {
   Middlewares,
   Model,
-  Namespace
+  Namespace,
+  getModels,
+  clearModels
 }

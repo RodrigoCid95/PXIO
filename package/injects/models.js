@@ -1,10 +1,31 @@
-function Library(lib) {
-  return (target, propertyKey) => {
-    if (!Object.prototype.hasOwnProperty.call(target, '$libraries')) {
-      target.$libraries = {}
+function getLibraries(ctor) {
+  if (!Object.hasOwn(ctor, '$libraries')) {
+    const parent = Object.getPrototypeOf(ctor)
+    const inherited = parent?.$libraries || {}
+    ctor.$libraries = { ...inherited }
+  }
+  return ctor.$libraries
+}
+
+function clearLibraries(ctor) {
+  while (ctor && ctor !== Function.prototype) {
+    if (Object.hasOwn(ctor, '$libraries')) {
+      delete ctor.$libraries
     }
-    target.$libraries[propertyKey] = lib
+    ctor = Object.getPrototypeOf(ctor)
   }
 }
 
-export { Library }
+function Library(value) {
+  return function(target, key) {
+    const ctor = target.constructor
+    const libraries = getLibraries(ctor)
+    libraries[key] = value
+  }
+}
+
+export {
+  Library,
+  getLibraries,
+  clearLibraries
+}

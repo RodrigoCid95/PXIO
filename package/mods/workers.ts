@@ -3,6 +3,8 @@ import * as workersControllers from 'workers'
 import getModel from './models'
 
 declare const SINGLE_PROCESS: boolean
+declare const getModels: any
+declare const clearModels: any
 
 const workersEmitter = new EventEmitter()
 const responseEmitter = new EventEmitter()
@@ -55,12 +57,14 @@ for (const Controller of values) {
       routes = Controller.prototype.$routes
       delete Controller.prototype.$routes
     }
-    if (Controller.prototype.$models) {
-      for (const [propertyKey, name] of Object.entries<string>(Controller.prototype.$models)) {
+    const models = getModels(Controller)
+    const eModels = Object.entries<string>(models)
+    if (eModels.length > 0) {
+      for (const [propertyKey, name] of eModels) {
         Object.defineProperty(Controller.prototype, propertyKey, { value: getModel(name), writable: false })
       }
-      delete Controller.prototype.$models
     }
+    clearModels(Controller)
     const controller = new Controller()
     for (const { nameEvent, propertyKey, middlewares = { before: [], after: [] } } of routes) {
       const routeName = `${$namespace}:${nameEvent}`
