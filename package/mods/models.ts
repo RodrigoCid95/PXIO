@@ -14,7 +14,11 @@ const values = Object
       const eLibraries = Object.entries<string>(libraries)
       if (eLibraries.length > 0) {
         for (const [propertyKey, name] of eLibraries) {
-          Object.defineProperty(Model.prototype, propertyKey, { value: getLib(name), writable: false })
+          Object.defineProperty(Model.prototype, propertyKey, {
+            get() {
+              return getLib(name)
+            }
+          })
         }
       }
       clearLibraries(Model)
