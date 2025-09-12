@@ -56,7 +56,6 @@ module.exports = async (isDebugging = false) => {
           { name: 'HTTP', value: 'http' },
           { name: 'Sockets', value: 'sockets' },
           { name: 'Workers', value: 'workers' },
-          { name: 'CLI', value: 'cli' },
         ],
         validate: (answer) => {
           if (answer.length < 1) {
