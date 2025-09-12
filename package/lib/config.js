@@ -35,27 +35,28 @@ module.exports = async (isDebugging = false) => {
     boot,
     resources = [],
     loader = {},
-    type = [],
+    mods = [],
     outDir,
     singleProcess
   } = pxio
-  const typeFlag = getFlag('type') || getFlag('t')
+  const typeFlag = getFlag('mods') || getFlag('m')
   if (typeof typeFlag === 'string') {
-    const typeFiltered = typeFlag.split(',').filter(s => ['http', 'sockets', 'workers'].includes(s))
+    const typeFiltered = typeFlag.split(',').filter(s => ['http', 'sockets', 'workers', 'cli'].includes(s))
     if (typeFiltered.length > 0) {
-      type = typeFiltered
+      mods = typeFiltered
     }
   }
-  if (type.length === 0) {
-    const { typeProject } = await prompt([
+  if (mods.length === 0) {
+    const { modsProject } = await prompt([
       {
         type: 'checkbox',
-        name: 'typeProject',
-        message: 'Selecciona que tipo de servidor quieres usar:',
+        name: 'modsProject',
+        message: 'Selecciona que módulos quieres usar:',
         choices: [
           { name: 'HTTP', value: 'http' },
           { name: 'Sockets', value: 'sockets' },
           { name: 'Workers', value: 'workers' },
+          { name: 'CLI', value: 'cli' },
         ],
         validate: (answer) => {
           if (answer.length < 1) {
@@ -65,7 +66,7 @@ module.exports = async (isDebugging = false) => {
         },
       },
     ])
-    type = typeProject
+    mods = modsProject
   }
   const bootFlag = getFlag('boot') || getFlag('b')
   if (typeof bootFlag === 'string') {
@@ -118,6 +119,6 @@ module.exports = async (isDebugging = false) => {
   } else {
     outDir = path.resolve(process.cwd(), outDir)
   }
-  const config = { type, boot, resources, loader, type, omitAuto, outDir, singleProcess }
+  const config = { mods, boot, resources, loader, omitAuto, outDir, singleProcess }
   return config
 }

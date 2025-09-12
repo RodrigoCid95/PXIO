@@ -1,15 +1,15 @@
 const fs = require('node:fs')
 const path = require('node:path')
 
-module.exports = ({ type, boot, isRelease, outDir, omitAuto, singleProcess }, watch = undefined) => {
+module.exports = ({ mods, boot, isRelease, outDir, omitAuto, singleProcess }, watch = undefined) => {
   const { PWD = process.cwd() } = process.env
   const injectables = path.resolve(__dirname, '..', 'injects')
-  const mods = path.resolve(__dirname, '..', 'mods')
+  const modsPath = path.resolve(__dirname, '..', 'mods')
   const dist = path.join(outDir)
   const modules = [
     {
       name: 'Configurations module',
-      input: path.join(mods, 'configs.ts'),
+      input: path.join(modsPath, 'configs.ts'),
       inject: [
         path.join(injectables, 'flags.js')
       ],
@@ -21,7 +21,7 @@ module.exports = ({ type, boot, isRelease, outDir, omitAuto, singleProcess }, wa
     },
     {
       name: 'Libraries module',
-      input: path.join(mods, 'libs.ts'),
+      input: path.join(modsPath, 'libs.ts'),
       inject: [
         path.join(injectables, 'flags.js'),
         path.join(injectables, 'configs.js')
@@ -35,7 +35,7 @@ module.exports = ({ type, boot, isRelease, outDir, omitAuto, singleProcess }, wa
     },
     {
       name: 'Models module',
-      input: path.join(mods, 'models.ts'),
+      input: path.join(modsPath, 'models.ts'),
       inject: [
         path.join(injectables, 'flags.js'),
         path.join(injectables, 'configs.js'),
@@ -49,12 +49,13 @@ module.exports = ({ type, boot, isRelease, outDir, omitAuto, singleProcess }, wa
       ext: ['./libs'],
     }
   ]
-  if (type.includes('http')) {
+  if (mods.includes('http')) {
     modules.push({
       name: 'HTTP Controllers module',
-      input: path.join(mods, 'http.ts'),
+      input: path.join(modsPath, 'http.ts'),
       inject: [
         path.join(injectables, 'flags.js'),
+        path.join(injectables, 'configs.js'),
         path.join(injectables, 'controllers.js'),
         path.join(injectables, 'controllers.http.js')
       ],
@@ -66,12 +67,13 @@ module.exports = ({ type, boot, isRelease, outDir, omitAuto, singleProcess }, wa
       ext: ['./models'],
     })
   }
-  if (type.includes('sockets')) {
+  if (mods.includes('sockets')) {
     modules.push({
       name: 'Sockets Controllers module',
-      input: path.join(mods, 'sockets.ts'),
+      input: path.join(modsPath, 'sockets.ts'),
       inject: [
         path.join(injectables, 'flags.js'),
+        path.join(injectables, 'configs.js'),
         path.join(injectables, 'middlewares.js'),
         path.join(injectables, 'controllers.js'),
         path.join(injectables, 'controllers.sockets.js')
@@ -84,12 +86,13 @@ module.exports = ({ type, boot, isRelease, outDir, omitAuto, singleProcess }, wa
       ext: ['./models'],
     })
   }
-  if (type.includes('workers')) {
+  if (mods.includes('workers')) {
     modules.push({
       name: 'Workers module',
-      input: path.join(mods, 'workers.ts'),
+      input: path.join(modsPath, 'workers.ts'),
       inject: [
         path.join(injectables, 'flags.js'),
+        path.join(injectables, 'configs.js'),
         path.join(injectables, 'middlewares.js'),
         path.join(injectables, 'controllers.js'),
         path.join(injectables, 'controllers.workers.js')
@@ -105,9 +108,10 @@ module.exports = ({ type, boot, isRelease, outDir, omitAuto, singleProcess }, wa
   }
   modules.push({
     name: 'Boot',
-    input: boot === 'manual' ? path.join(PWD, 'main.ts') : path.join(mods, 'main.ts'),
+    input: boot === 'manual' ? path.join(PWD, 'main.ts') : path.join(modsPath, 'main.ts'),
     inject: [
       path.join(injectables, 'flags.js'),
+      path.join(injectables, 'configs.js'),
       path.join(injectables, 'main.configs.js'),
       path.join(injectables, 'main.http.js'),
       path.join(injectables, 'main.sockets.js'),
@@ -115,11 +119,11 @@ module.exports = ({ type, boot, isRelease, outDir, omitAuto, singleProcess }, wa
     ],
     define: {
       BOOT: `"${boot}"`,
-      IS_HTTP: type.includes('http') ? 'true' : 'false',
-      IS_SOCKETS: type.includes('sockets') ? 'true' : 'false',
-      IS_WORKERS: type.includes('workers') ? 'true' : 'false',
-      IS_HTTP_SOCKETS: type.includes('http') && type.includes('sockets') ? 'true' : 'false',
-      IS_HTTP_SOCKETS_WORKERS: type.includes('http') && type.includes('sockets') && type.includes('workers') ? 'true' : 'false',
+      IS_HTTP: mods.includes('http') ? 'true' : 'false',
+      IS_SOCKETS: mods.includes('sockets') ? 'true' : 'false',
+      IS_WORKERS: mods.includes('workers') ? 'true' : 'false',
+      IS_HTTP_SOCKETS: mods.includes('http') && mods.includes('sockets') ? 'true' : 'false',
+      IS_HTTP_SOCKETS_WORKERS: mods.includes('http') && mods.includes('sockets') && mods.includes('workers') ? 'true' : 'false',
       IS_RELEASE: isRelease ? 'true' : 'false',
       OMIT_AUTO: omitAuto ? 'true' : 'false',
       SINGLE_PROCESS: singleProcess ? 'true' : 'false'

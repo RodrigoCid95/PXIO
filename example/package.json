@@ -23,7 +23,7 @@
 		"v4": "^0.0.1"
 	},
 	"pxio": {
-		"type": [
+		"mods": [
 			"http",
 			"sockets",
 			"workers"
