@@ -111,7 +111,6 @@ module.exports = ({ mods, boot, isRelease, outDir, omitAuto, singleProcess }, wa
     input: boot === 'manual' ? path.join(PWD, 'main.ts') : path.join(modsPath, 'main.ts'),
     inject: [
       path.join(injectables, 'flags.js'),
-      path.join(injectables, 'configs.js'),
       path.join(injectables, 'main.configs.js'),
       path.join(injectables, 'main.http.js'),
       path.join(injectables, 'main.sockets.js'),
